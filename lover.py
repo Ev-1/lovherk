@@ -42,7 +42,7 @@ class Rules:
         lover = ""
         for lov in os.listdir('lovdata'):
             lover += '•' + lov.replace(".txt","") + "\n"
-        await ctx.send(f"**Liste over lovene i lovherket:**\n```{lover}```")
+        await ctx.send("**Liste over lovene i lovherket:**\n```{}```".format(lover))
 
 
     # Gjør det samme som §lov
@@ -53,7 +53,7 @@ class Rules:
         lover = ""
         for lov in os.listdir('lovdata'):
             lover += '•' + lov.replace(".txt","") + "\n"
-        await ctx.send(f"Liste over lovene i lovherket\n```{lover}```")
+        await ctx.send("Liste over lovene i lovherket\n```{}```".format(lover))
 
     @commands.command()
     async def aaa(self, ctx):

@@ -6,7 +6,6 @@ import os
 from data import Bot
 from utils import permissions
 
-
 with open("config.json") as f:
     data = json.load(f)
     token = data["token"]
