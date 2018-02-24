@@ -15,6 +15,6 @@ with open("config.json") as f:
 print("Logging in...")
 bot = Bot(command_prefix="§", prefix=prefix, pm_help=True)
 
-bot.load_extension(f"lover")  
+bot.load_extension("lover")  
 
 bot.run(token)
