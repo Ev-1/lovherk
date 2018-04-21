@@ -24,11 +24,15 @@ class Rules:
         await ctx.send(test.read().decode('utf-8'))
 
 
-
     @commands.command()
     async def lov(self, ctx, lov):
         """"""
+        if lov[1] == '#':
+            lov = lov[1:-1]
+        if lov == "grunnloven":
+            lov = "Grunnloven"
         lov += '.txt'
+
         if lov in os.listdir('lovdata'):
             rulepath = 'lovdata/' + lov
             with codecs.open(rulepath,'r',encoding='utf8') as lov:
@@ -39,10 +43,7 @@ class Rules:
 
     @lov.error
     async def lov_error(error, ctx, lov):
-        lover = ""
-        for lov in os.listdir('lovdata'):
-            lover += '•' + lov.replace(".txt","") + "\n"
-        await ctx.send("**Liste over lovene i lovherket:**\n```{}```".format(lover))
+        await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list()))
 
 
     # Gjør det samme som §lov
@@ -50,10 +51,7 @@ class Rules:
     @commands.command()
     async def lover(self, ctx):
         """  """
-        lover = ""
-        for lov in os.listdir('lovdata'):
-            lover += '•' + lov.replace(".txt","") + "\n"
-        await ctx.send("Liste over lovene i lovherket\n```{}```".format(lover))
+        await ctx.send("Liste over lovene i lovherket\n{}".format(get_rules_list()))
 
     @commands.command()
     async def aaa(self, ctx):
@@ -64,3 +62,15 @@ class Rules:
 
 def setup(bot):
     bot.add_cog(Rules(bot))
+
+
+def get_rules_list():
+    lover = ""
+    for lov in os.listdir('lovdata'):
+        if lov == "Grunnloven.txt":
+            lover = '•' + lov.replace(".txt","") + "\n" + lover
+        elif lov[0] == '#':
+            lover += '•' + '<' + lov.replace(".txt","") + '>' + "\n"
+        else:
+            lover += '•' + lov.replace(".txt","") + "\n"
+    return lover
