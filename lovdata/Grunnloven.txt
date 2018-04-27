@@ -16,9 +16,9 @@
     § 10: Ikke noe støtende eller ubehagelige megmeger/media (Eksempler: Mobbing, gore, unødvendig slemhet). Vi vet det finnes unntakssituasjoner. Alt NSFW og NSFL innhold må markeres tydelig.
 
 **Diverse**
-    § 11: Ingen posting av invitasjonslinker til andre discordservere uten godkjenning fra mods/admins (bruk gjerne @Posten for dette). 
+    § 11: Ingen posting av invitasjonslinker til andre discordservere uten godkjenning fra mods/admins (bruk gjerne <@372155256341135360> for dette). 
     § 12: <#298511909236375552> har noe annerledes håndheving av visse regler, så se pin i kanalen for egne regler.
     § 13: NSFW megmeger kan postes i <#398969290662871041>, men vær anstendig. NSFL innhold er ikke tillatt. 
-    § 14: Moderering blir ikke diskutert offentlig, dette tas gjennom @Posten
+    § 14: Moderering blir ikke diskutert offentlig, dette tas gjennom <@372155256341135360>.
 
     - Sist oppdatert: 1. April 2018
