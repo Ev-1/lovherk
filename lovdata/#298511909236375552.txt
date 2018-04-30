@@ -12,7 +12,7 @@ Retningslinjer for <#298511909236375552>
     §  7: Ting som ikke er relevant til samtalen, og/eller ukonstruktive innspill.
     §  8: Krangling om rase og/eller IQ, og dets relasjoner til intelligens og voldstendenser.
     §  9: Holocaust-benektelse eller antisemittisme.
-    § 10: Unødig bruk av sarkasme og andre uproduktive momenter i diskusjonen, typ "/s".
+    § 10: Unødig bruk av sarkasme og andre uproduktive momenter, typ "/s".
     § 11: Megmeger.
     § 12: Bait.
 
