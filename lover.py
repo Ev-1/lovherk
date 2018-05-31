@@ -13,20 +13,10 @@ class Rules:
         self.bot = bot
         self.process = psutil.Process(os.getpid())
 
-
-    # Kan f.eks. hente regler fra rett fra github.
-    # Ubrukelig
-    @commands.command()
-    async def httplov(self, ctx, lov):
-        """"""
-        targeturl = 'https://raw.githubusercontent.com/Ev-1/lovherk/master/' + lov
-        test = urllib.request.urlopen(targeturl)
-        await ctx.send(test.read().decode('utf-8'))
-
-
+        
     @commands.command()
     async def lov(self, ctx, lov):
-        """"""
+        """Printer lovene i lovherket"""
         if lov[1] == '#':
             lov = lov[1:-1]
         if lov == "grunnloven":
@@ -50,15 +40,9 @@ class Rules:
     # relativt ubrukelig
     @commands.command()
     async def lover(self, ctx):
-        """  """
+        """ Sender liste med lover """
         await ctx.send("Liste over lovene i lovherket\n{}".format(get_rules_list()))
 
-    @commands.command()
-    async def aaa(self, ctx):
-        """"""
-        with codecs.open('lovdata/AAAA.txt','r',encoding='utf8') as lov:
-            lovtekst = lov.read()
-        await ctx.send(lovtekst)
 
 def setup(bot):
     bot.add_cog(Rules(bot))
