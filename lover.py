@@ -26,19 +26,14 @@ class Rules:
         lov += '.txt'
 
         if lov in os.listdir('lovdata'):
-            print("crap")
             rulepath = 'lovdata/' + lov
             with codecs.open(rulepath,'r',encoding='utf8') as lov:
                 lovtekst = lov.read()
 
             if num != None:
-                print("Yeeet", num)
                 lovregex = r"(§ *" + re.escape(num) + r"[a-z]?: [\S ]*)"
-                print(lovregex)
-                print(lovtekst)
                 m = re.search(lovregex,lovtekst)
                 lovtekst = m.groups()[0]
-                print(m.groups()[0])
 
             await ctx.send(lovtekst)
         else:
