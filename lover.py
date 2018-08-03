@@ -16,7 +16,7 @@ class Rules:
         self.process = psutil.Process(os.getpid())
 
     @commands.command(no_pm=True)
-    async def lov(self, ctx, lov, num: str = None):
+    async def lov(self, ctx, lov,*, num: str = None):
         """Viser regler"""
 
         if lov[1] == '#':
@@ -31,9 +31,12 @@ class Rules:
                 lovtekst = lov.read()
 
             if num != None:
-                lovregex = r"(§ *" + re.escape(num) + r"[a-z]?: [\S ]*)"
-                m = re.search(lovregex,lovtekst)
-                lovtekst = m.groups()[0]
+                temp_lov = ""
+                for rule in num.split():
+                    lovregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
+                    m = re.search(lovregex,lovtekst)
+                    temp_lov += m.groups()[0] + "\n"
+                lovtekst = temp_lov 
 
             await ctx.send(lovtekst)
         else:
@@ -44,26 +47,24 @@ class Rules:
         await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list()))
 
 
-    # Gjør det samme som §lov
-    # relativt ubrukelig
-
     @commands.command()
     async def lover(self, ctx):
         """  """
         await ctx.send("Liste over lovene i lovherket\n{}".format(get_rules_list()))
 
 
- #   @permissions.has_permissions(manage_messages=True)
- #   @commands.command()
- #   async def add_autoupdate(self, ctx, channelID, messageID):
- #       """Kjeks"""
- #       await ctx.send("{} og {}".format(channelID, messageID))
-
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def nylov(self, ctx, *, newrule):
         """Kjeks"""
         await ctx.send("Test {}".format(newrule))
+
+#    @permissions.has_permissions(manage_messages=True)
+#    @commands.command()
+#    async def add_autoupdate(self, ctx, channelID, messageID):
+#        """Kjeks"""
+#        await ctx.send("{} og {}".format(channelID, messageID))
+
 
 #    @permissions.has_permissions(manage_messages=True)
 #    @commands.command()

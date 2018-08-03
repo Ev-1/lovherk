@@ -2,17 +2,19 @@
 
 import json
 import os
+import codecs
 
 from data import Bot
 from utils import permissions
 
-with open("config.json") as f:
+with codecs.open("config.json", 'r',encoding='utf8') as f:
     data = json.load(f)
     token = data["token"]
     prefix = data["prefix"]
 
 print("Logging in...")
-bot = Bot(command_prefix="§", prefix=prefix, pm_help=True)
+print(prefix)
+bot = Bot(command_prefix=prefix, prefix=prefix, pm_help=True)
 
 bot.load_extension("lover")  
 
