@@ -48,6 +48,30 @@ class Rules:
 
 
     @commands.command()
+    @permissions.has_permissions(manage_messages=True)
+    async def plaintext(self, ctx, lov):
+        """Viser regler"""
+
+        if lov[1] == '#':
+            lov = lov[1:-1]
+        if lov == "grunnloven":
+            lov = "Grunnloven"
+        lov += '.txt'
+
+        if lov in os.listdir('lovdata'):
+            rulepath = 'lovdata/' + lov
+            with codecs.open(rulepath,'r',encoding='utf8') as lov:
+                lovtekst = lov.read()
+            await ctx.send("```\n" + lovtekst + "\n```")
+        else:
+            await ctx.send("sjekk at du skrev riktig")
+
+    #litt crap, men hindrer spam av logs
+    @plaintext.error
+    async def plaintext_error(error, ctx, lov):
+        return
+
+    @commands.command()
     async def lover(self, ctx):
         """  """
         await ctx.send("Liste over lovene i lovherket\n{}".format(get_rules_list()))
