@@ -245,25 +245,24 @@ class Rules:
             content = f.readlines()
             content = [x.strip() for x in content]
             for line in content:
-                #await ctx.send(line)
-                print(line)
-                lov, channelID, messageID = line.split(" ")
-                try:
-                    channel = ctx.guild.get_channel(int(channelID))
-                    message = await channel.get_message(messageID)
+                if line.strip() != "":
+                    lov, channelID, messageID = line.split(" ")
+                    try:
+                        channel = ctx.guild.get_channel(int(channelID))
+                        message = await channel.get_message(messageID)
 
-                except:
-                    #await ctx.send("Melding ikke funnet(trolig slettet). Kanal: <#{}>, ID: {}".format(channelID, messageID))
-                    return
-                if lov in os.listdir('lovdata'):
-                    rulepath = 'lovdata/' + lov
-                    with codecs.open(rulepath,'r',encoding='utf8') as g:
-                        lovtekst = g.read()
-                    if lovtekst == "":
+                    except:
+                        #await ctx.send("Melding ikke funnet(trolig slettet). Kanal: <#{}>, ID: {}".format(channelID, messageID))
                         return
-                    else:
-                        await message.edit(content=lovtekst)
-                        await asyncio.sleep(5)
+                    if lov in os.listdir('lovdata'):
+                        rulepath = 'lovdata/' + lov
+                        with codecs.open(rulepath,'r',encoding='utf8') as g:
+                            lovtekst = g.read()
+                        if lovtekst == "":
+                            return
+                        else:
+                            await message.edit(content=lovtekst)
+                            await asyncio.sleep(5)
 
 
 
