@@ -95,7 +95,7 @@ class Rules:
             await ctx.send("Sjekk at du skrev riktig.")
 
     @endrelov.error
-    async def endrelov_error(error, ctx, lov, *, newrule):
+    async def endrelov_error(error, ctx, lov, *, newrule: str = None):
         return
 
 
