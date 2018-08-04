@@ -240,7 +240,7 @@ class Rules:
             content = f.readlines()
             content = [x.strip() for x in content]
             for line in content:
-                lov, channelID, messageID = line.split()
+                lov, channelID, messageID = line.split(" ")
                 try:
                     channel = ctx.guild.get_channel(int(channelID))
                     message = await channel.get_message(messageID)
