@@ -212,6 +212,7 @@ class Rules:
                 f.close()
                 if message_info in info:
                     print("Allerede der")
+                    await ctx.send("Allerede der")
                 else:                    
                     with codecs.open('autoupdate.txt', 'a', encoding='utf8') as f:
                         f.write(message_info)
@@ -225,6 +226,7 @@ class Rules:
 
     @auto.error
     async def auto_error(self, ctx, lov, channel, messageID):
+        await ctx.send("Crap")
         return
 
 
@@ -243,7 +245,8 @@ class Rules:
             content = f.readlines()
             content = [x.strip() for x in content]
             for line in content:
-                await ctx.send(line)
+                #await ctx.send(line)
+                print(line)
                 lov, channelID, messageID = line.split(" ")
                 try:
                     channel = ctx.guild.get_channel(int(channelID))
