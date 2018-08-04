@@ -5,6 +5,7 @@ import os
 import codecs
 import re
 import urllib
+import asyncio
 
 from utils import permissions
 from discord.ext import commands
@@ -87,7 +88,9 @@ class Rules:
             rulepath = 'lovdata/' + lov
             with codecs.open(rulepath,'w',encoding='utf8') as lov:
                 lov.write(newrule)
+            await self.oppdater(ctx)
             await ctx.send("Regler oppdatert")
+
         else:
             await ctx.send("Sjekk at du skrev riktig.")
 
@@ -141,18 +144,117 @@ class Rules:
         """  """
         await ctx.send("Liste over lovene i lovherket\n{}".format(get_rules_list()))
 
-#    @permissions.has_permissions(manage_messages=True)
-#    @commands.command()
-#    async def add_autoupdate(self, ctx, channelID, messageID):
-#        """Kjeks"""
-#        await ctx.send("{} og {}".format(channelID, messageID))
 
 
-#    @permissions.has_permissions(manage_messages=True)
-#    @commands.command()
-#    async def autoedit(self, ctx, channelID, messageID):
-#        """Kjeks"""
-#        await ctx.send("{} og {}".format(channelID, messageID))
+
+    # Autoupdating of rules
+
+
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.command()
+    async def fiksauto(self, ctx):
+        """Setter en melding til å automatisk oppdateres"""    
+        await self.oppdater(ctx)
+        await ctx.send("Oppdatert")
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.command()
+    async def fjernauto(self, ctx, lov, channel, messageID):
+        """Setter en melding til å automatisk oppdateres"""    
+        channelID = channel[2:-1]
+        to_remove = messageID
+        with codecs.open('autoupdate.txt', 'r', encoding='utf8') as f:
+            lines = f.readlines()
+            f.close()
+        with codecs.open('autoupdate.txt', 'w', encoding='utf8') as f:
+            for line in lines:
+                if to_remove not in line:
+                    f.write(line)
+
+        await ctx.send("autooppdatering fjernet")
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.command()
+    async def listauto(self, ctx):
+        """Setter en melding til å automatisk oppdateres"""    
+        with codecs.open('autoupdate.txt', 'r', encoding='utf8') as f:
+            auto_list = f.read()
+            f.close()
+
+        await ctx.send(auto_list)
+
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.command()
+    async def auto(self, ctx, lov, channel, messageID):
+        """Setter en melding til å automatisk oppdateres"""
+
+        channelID = channel[2:-1]
+        channel = ctx.guild.get_channel(int(channelID))
+
+        lov = translate(lov)
+
+        try:
+            message = await channel.get_message(messageID)
+        except:
+            await ctx.send("Melding ikke funnet")
+            return
+
+        if message.author == self.bot.user:
+            message_info = "{} {} {}\n".format(lov, channelID, messageID)            
+
+            with codecs.open('autoupdate.txt', 'r', encoding='utf8') as f:
+                if message_info in f.read():
+                    print("smud")
+                else:
+                    f.close()
+                    with codecs.open('autoupdate.txt', 'a', encoding='utf8') as f:
+                        f.write(message_info)                    
+        else:
+            await ctx.send("Sjekk at meldinga tilhører botten")
+
+        await ctx.send("Regel satt til å oppdateres automatisk")
+        await self.oppdater(ctx)
+
+    @auto.error
+    async def auto_error(self, ctx, lov, channel, messageID):
+        return
+
+
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.command()
+    async def si(self, ctx, *, message: str = None):
+        """Setter en melding til å automatisk oppdateres"""
+        if message == None:
+            return
+        await ctx.send(message)
+
+
+    async def oppdater(self, ctx):
+        with codecs.open('autoupdate.txt', 'r', encoding='utf8') as f:
+            content = f.readlines()
+            content = [x.strip() for x in content]
+            for line in content:
+                lov, channelID, messageID = line.split()
+                channel = ctx.guild.get_channel(int(channelID))
+                try:
+                    message = await channel.get_message(messageID)
+                except:
+                    await ctx.send("Melding ikke funnet(trolig slettet). Kanal: <#{}>, ID: {}".format(channelID, messageID))
+                    return
+                if lov in os.listdir('lovdata'):
+                    rulepath = 'lovdata/' + lov
+                    with codecs.open(rulepath,'r',encoding='utf8') as g:
+                        lovtekst = g.read()
+                    if lovtekst == "":
+                        return
+                    else:
+                        await message.edit(content=lovtekst)
+                        await asyncio.sleep(5)
+
+
 
 def setup(bot):
     bot.add_cog(Rules(bot))
