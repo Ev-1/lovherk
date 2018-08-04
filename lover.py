@@ -182,7 +182,10 @@ class Rules:
             auto_list = f.read()
             f.close()
 
-        await ctx.send(auto_list)
+        if auto_list == "":
+            await ctx.send("Ingen meldinger er satt til autooppdatering")
+        else:
+            await ctx.send(auto_list)
 
 
     @permissions.has_permissions(manage_messages=True)
@@ -238,11 +241,12 @@ class Rules:
             content = [x.strip() for x in content]
             for line in content:
                 lov, channelID, messageID = line.split()
-                channel = ctx.guild.get_channel(int(channelID))
                 try:
+                    channel = ctx.guild.get_channel(int(channelID))
                     message = await channel.get_message(messageID)
+
                 except:
-                    await ctx.send("Melding ikke funnet(trolig slettet). Kanal: <#{}>, ID: {}".format(channelID, messageID))
+                    #await ctx.send("Melding ikke funnet(trolig slettet). Kanal: <#{}>, ID: {}".format(channelID, messageID))
                     return
                 if lov in os.listdir('lovdata'):
                     rulepath = 'lovdata/' + lov
