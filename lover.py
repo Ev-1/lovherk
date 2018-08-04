@@ -182,7 +182,7 @@ class Rules:
             auto_list = f.read()
             f.close()
 
-        if auto_list == "":
+        if auto_list == "" or auto_list == "\n":
             await ctx.send("Ingen meldinger er satt til autooppdatering")
         else:
             await ctx.send(auto_list)
@@ -208,16 +208,19 @@ class Rules:
             message_info = "{} {} {}\n".format(lov, channelID, messageID)            
 
             with codecs.open('autoupdate.txt', 'r', encoding='utf8') as f:
-                if message_info in f.read():
-                    print("smud")
-                else:
-                    f.close()
+                info = f.read()
+                f.close()
+                if message_info in info:
+                    print("Allerede der")
+                else:                    
                     with codecs.open('autoupdate.txt', 'a', encoding='utf8') as f:
-                        f.write(message_info)                    
+                        f.write(message_info)
+
+                    await ctx.send("Regel satt til å oppdateres automatisk")
+
         else:
             await ctx.send("Sjekk at meldinga tilhører botten")
 
-        await ctx.send("Regel satt til å oppdateres automatisk")
         await self.oppdater(ctx)
 
     @auto.error
