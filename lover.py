@@ -243,6 +243,7 @@ class Rules:
             content = f.readlines()
             content = [x.strip() for x in content]
             for line in content:
+                await ctx.send(line)
                 lov, channelID, messageID = line.split(" ")
                 try:
                     channel = ctx.guild.get_channel(int(channelID))
