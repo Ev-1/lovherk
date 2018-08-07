@@ -56,8 +56,7 @@ class Rules:
 
     @lov.error
     async def lov_error(error, ctx, lov):
-        #await ctx.send("Crap")
-        await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list()))
+        await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
 
 
 
