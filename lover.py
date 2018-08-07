@@ -27,12 +27,13 @@ class Rules:
             await ctx.send("Ikke tilgjengelig i DMs")
             return
 
-        if lov == None:
-            await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
-            return
 
         lov = translate(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
+
+        if lov == None:
+            await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
+            return
 
         if lov in os.listdir(rules_path):
             rulepath = rules_path + lov
@@ -392,7 +393,7 @@ def setup(bot):
 
 def get_rules_list(server_ID):
     
-    rules_path = "servers/" + str(server_ID) + "/rules"
+    rules_path = get_server_path + "rules"
     
     lover = ""
     
