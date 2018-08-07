@@ -14,7 +14,7 @@ with codecs.open("config.json", 'r',encoding='utf8') as f:
 
 print("Logging in...")
 print(prefix)
-bot = Bot(command_prefix=prefix, prefix=prefix, pm_help=True)
+bot = Bot(command_prefix=prefix, prefix=prefix)
 
 bot.load_extension("lover")  
 
