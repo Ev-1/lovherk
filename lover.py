@@ -275,6 +275,7 @@ class Rules:
             return
         
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
+        check_auto(update_path)
         to_remove = messageID
 
         with codecs.open(update_path, 'r', encoding='utf8') as f:
@@ -299,6 +300,7 @@ class Rules:
             return
 
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
+        check_auto(update_path)
    
         with codecs.open(update_path, 'r', encoding='utf8') as f:
             auto_list = f.readlines()
@@ -355,6 +357,8 @@ class Rules:
 
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         rules_path = get_server_path(ctx.guild.id) + "rules/"
+
+        check_auto(update_path)
 
         with codecs.open(update_path, 'r', encoding='utf8') as f:
             content = f.readlines()
