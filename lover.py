@@ -20,7 +20,7 @@ class Rules:
 
     @commands.command(no_pm=True)
     async def lov(self, ctx, lov: str = None,*, num: str = None):
-        """Viser regler"""
+        """Viser reglene i lovherket."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -66,7 +66,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def nylov(self, ctx, lov, *, newrule: str = None):
-        """Lager lover"""
+        """Legger til et nytt sett med regler i lovherket."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -98,7 +98,7 @@ class Rules:
     @commands.command()
     @permissions.has_permissions(manage_messages=True)
     async def plaintext(self, ctx, lov):
-        """Viser regler"""
+        """Sender reglene i en kodeblokk så de enkelt kan kopieres med formattering."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -128,7 +128,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def endrelov(self, ctx, lov, *, newrule: str = None):
-        """Endrer lover"""
+        """Endrer lover i lovherket."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -146,7 +146,7 @@ class Rules:
             rulepath = rules_path + lov
             with codecs.open(rulepath,'w',encoding='utf8') as lov:
                 lov.write(newrule)
-            await self.oppdater(ctx)
+            await self.update_messages(ctx)
             await ctx.send("Regler oppdatert")
 
         else:
@@ -163,7 +163,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def fjernlov(self, ctx, lov):
-        """Fjerner lover"""
+        """Fjerner regler fra lovherket."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -195,7 +195,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def auto(self, ctx, lov, channel, messageID):
-        """Setter en melding til å automatisk oppdateres"""
+        """Setter en melding til å automatisk oppdateres når regler endres."""
 
         # Checks for DMs
         if ctx.guild == None:
@@ -242,7 +242,7 @@ class Rules:
                 await ctx.send("Regel satt til å oppdateres automatisk")
 
 
-        await self.oppdater(ctx)
+        await self.update_messages(ctx)
 
     @auto.error
     async def auto_error(self, ctx, lov, channel, messageID):
@@ -253,21 +253,21 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def fiksauto(self, ctx):
-        """Setter en melding til å automatisk oppdateres"""    
+        """Prøver å oppdatere meldingene som skal oppdateres automatisk."""    
 
         # Checks for DMs
         if ctx.guild == None:
             await ctx.send("Ikke tilgjengelig i DMs")
             return
 
-        await self.oppdater(ctx)
+        await self.update_messages(ctx)
         await ctx.send("Oppdatert")
 
 
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def fjernauto(self, ctx, messageID):
-        """Setter en melding til å automatisk oppdateres"""    
+        """Fjerner en melding fra å oppdateres automatisk."""    
 
         # Checks for DMs
         if ctx.guild == None:
@@ -292,7 +292,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def listauto(self, ctx):
-        """Setter en melding til å automatisk oppdateres""" 
+        """Gir en liste over meldinger på serveren som er satt til å oppdateres automatisk.""" 
         
         # Checks for DMs
         if ctx.guild == None:
@@ -323,7 +323,7 @@ class Rules:
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def si(self, ctx, *, message: str = None):
-        """Setter en melding til å automatisk oppdateres"""
+        """Får botten til å si det du sier."""
         if message == None:
             return
         await ctx.send(message)
@@ -331,29 +331,35 @@ class Rules:
 
     @permissions.has_permissions(manage_messages=True)
     @commands.command()
-    async def test(self, ctx, *, message: str = None):
-        """Setter en melding til å automatisk oppdateres"""
+    async def kanal(self, ctx, *, channel: str = None):
+        """Ber brukere gå til en annen kanal."""
 
         # Checks for DMs
         if ctx.guild == None:
             await ctx.send("Ikke tilgjengelig i DMs")
             return
 
-        server_path = get_server_path(ctx.guild.id)
-
-        await ctx.send(server_path)
-
-        if message == None:
+        if channel == None:
             return
-        await ctx.send(ctx.guild.id)
+        
+        await ctx.message.delete()
+
+        message = "Ser ut som om du/dere snakker om noe som kanskje passer bedre i " + channel
+        message += ". Vi hadde satt pris på om du/dere kunne flytte over til " + channel + " slik at serveren blir mest mulig oversiktlig. Takk :)"
+
         await ctx.send(message)
 
+    @kanal.error
+    async def kanal_error(self, ctx, channel):
+        await ctx.send("Det skjedde noe feil, sjekk at jeg har tillatelse til å slette meldinger")
 
 
 
 
 
-    async def oppdater(self, ctx):
+
+
+    async def update_messages(self, ctx):
 
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         rules_path = get_server_path(ctx.guild.id) + "rules/"
