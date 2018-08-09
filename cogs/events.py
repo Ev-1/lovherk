@@ -58,7 +58,7 @@ class Events:
             self.bot.uptime = datetime.utcnow()
 
         print('Ready: %s | Servers: %s' % (self.bot.user, len(self.bot.guilds)))
-        await self.bot.change_presence(activity=discord.Game(type=0, name=self.config.playing), status=discord.Status.online)
+#        await self.bot.change_presence(activity=discord.Game(type=0, name=self.config.playing), status=discord.Status.online)
 
 
 def setup(bot):
