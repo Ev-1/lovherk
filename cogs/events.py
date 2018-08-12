@@ -57,9 +57,8 @@ class Events:
         if not hasattr(self.bot, 'uptime'):
             self.bot.uptime = datetime.utcnow()
 
-        print('Ready: %s | Servers: %s' % (self.bot.user, len(self.bot.guilds)))
-#        await self.bot.change_presence(activity=discord.Game(type=0, name=self.config.playing), status=discord.Status.online)
-
+        print(f'Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}')
+        await self.bot.change_presence(activity=discord.Game(type=0, name=self.config.playing), status=discord.Status.online)
 
 def setup(bot):
     bot.add_cog(Events(bot))
