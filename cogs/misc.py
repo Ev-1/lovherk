@@ -25,7 +25,6 @@ class Misc:
         await ctx.send(message)
 
 
-    @permissions.has_permissions(manage_messages=True)
     @commands.command()
     async def sislett(self, ctx, *, message: str = None):
         """Får botten til å si det du sier og sletter den originale meldingen."""
@@ -34,14 +33,10 @@ class Misc:
 
         try:
             await ctx.message.delete()
-        except:
-            pass
-
-        await ctx.send(message)
-
-    @sislett.error
-    async def sislett_error(self, ctx, channel):
-        await ctx.send("Det skjedde noe feil, sjekk at jeg har tillatelse til å slette meldinger")
+            await ctx.send(message)
+        except discord.Forbidden:
+            await ctx.send("Sjekk at jeg har tillatelse til å slette meldinger")
+            
 
 
     @permissions.has_permissions(manage_messages=True)
@@ -56,18 +51,34 @@ class Misc:
 
         if channel == None:
             return
-        
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
 
-        message = "Ser ut som om du/dere snakker om noe som kanskje passer bedre i " + channel
-        message += ". Vi hadde satt pris på om du/dere kunne flytte over til " + channel + " slik at serveren blir mest mulig oversiktlig. Takk :)"
+            message = "Ser ut som om du/dere snakker om noe som kanskje passer bedre i " + channel
+            message += ". Vi hadde satt pris på om du/dere kunne flytte over til " + channel + " slik at serveren blir mest mulig oversiktlig. Takk :)"
 
-        await ctx.send(message)
+            await ctx.send(message)
 
-    @kanal.error
-    async def kanal_error(self, ctx, channel):
-        await ctx.send("Det skjedde noe feil, sjekk at jeg har tillatelse til å slette meldinger")
+        except discord.Forbidden:
+            await ctx.send("Sjekk at jeg har tillatelse til å slette meldinger")
 
+
+    @commands.command()
+    async def info(self, ctx, *, channel: str = None):
+        """Info om LovherkBot"""
+
+
+        avatar = self.bot.user.avatar_url_as(format=None, static_format='png', size=1024)
+        infotext = "En bot som holder kontroll på reglene i [/r/Norge](https://discord.gg/UeP2tH6)"        
+
+        embed=discord.Embed(color = 0xD9C04D)#title="Test", url="https://cdn.discordapp.com/avatars/384661910198681610/de5f117fc9172d66a11fae61266242e9.png?size=1024", description="ded")
+        embed.set_author(name=self.bot.user.name, icon_url=avatar)
+        embed.set_thumbnail(url=avatar)
+        embed.add_field(name="Hva?", value=infotext, inline=False)
+        embed.add_field(name="Hvorfor?", value="Fordi Even#0001 ville lære seg å lage discordbot", inline=False)
+        embed.add_field(name="Hvorfor er dette en kommando?", value="Fordi Even#0001 ville lære seg å lage embeds", inline=False)
+        embed.set_footer(text = ":)")
+        await ctx.send(embed=embed)
 
 
 
