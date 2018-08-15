@@ -17,15 +17,12 @@ class Rules:
         self.process = psutil.Process(os.getpid())
 
 
+    #Commands for viewing and editing rules
 
-    @commands.command(no_pm=True)
-    async def lov(self, ctx, lov: str = None,*, num: str = None):
+    @commands.guild_only()
+    @commands.group(invoke_without_command=True, name="lov")
+    async def rules(self, ctx, lov: str = None,*, num: str = None):
         """Viser reglene i lovherket."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         if lov == None:
             await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
@@ -64,14 +61,10 @@ class Rules:
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def nylov(self, ctx, lov, *, newrule: str = None):
+    @commands.guild_only()
+    @rules.command(name="ny")
+    async def newrules(self, ctx, lov, *, newrule: str = None):
         """Legger til et nytt sett med regler i lovherket."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         lov = translate(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
@@ -90,15 +83,11 @@ class Rules:
 
 
 
-    @commands.command()
     @permissions.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @rules.command(name="plaintext")
     async def plaintext(self, ctx, lov):
         """Sender reglene i en kodeblokk så de enkelt kan kopieres med formattering."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         lov = translate(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
@@ -113,17 +102,29 @@ class Rules:
 
 
 
+    @permissions.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @rules.command(name="fjern")
+    async def removerules(self, ctx, lov):
+        """Fjerner regler fra lovherket."""
+
+        lov = translate(lov)
+        rules_path = get_server_path(ctx.guild.id) + "rules/"
+
+        if lov in os.listdir(rules_path):
+            rulepath = rules_path + lov
+            os.remove(rulepath)
+            await ctx.send("Regler fjernet")
+        else:
+            await ctx.send("Reglene du skrev inn finnes ikke")
+
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def endrelov(self, ctx, lov, *, newrule: str = None):
-        """Endrer lover i lovherket."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Den kommandoen er ikke tilgjengelig i DMs")
-            return
+    @commands.guild_only()
+    @rules.command(name="oppdater")
+    async def updaterules(self, ctx, lov, *, newrule: str = None):
+        """Oppdaterer lover i lovherket."""
 
         if newrule == None:
             await ctx.send("Du skrev ikke inn noe")
@@ -143,44 +144,14 @@ class Rules:
             await ctx.send("Sjekk at du skrev riktig.")
 
 
-
-
-    @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def fjernlov(self, ctx, lov):
-        """Fjerner regler fra lovherket."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
-
-        lov = translate(lov)
-        rules_path = get_server_path(ctx.guild.id) + "rules/"
-
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
-            os.remove(rulepath)
-            await ctx.send("Regler fjernet")
-        else:
-            await ctx.send("Reglene du skrev inn finnes ikke")
-
-
-
-
-
     # Automatic updating of rules.
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def auto(self, ctx, lov, channel, messageID):
+    @commands.guild_only()
+    @commands.group(invoke_without_command=True, name = "auto")
+    async def autorules(self, ctx, lov, channel, messageID):
         """Setter en melding til å automatisk oppdateres når regler endres."""
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         # Try to find the message
         try:
@@ -198,7 +169,6 @@ class Rules:
             await ctx.send("Melding ikke funnet")
             return
     
-
 
         if message.author != self.bot.user:
             await ctx.send("Sjekk at meldingen tilhører botten")
@@ -226,28 +196,20 @@ class Rules:
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def fiksauto(self, ctx):
+    @commands.guild_only()
+    @autorules.command(name="fiks")
+    async def fixauto(self, ctx):
         """Prøver å oppdatere meldingene som skal oppdateres automatisk."""    
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         await self.update_messages(ctx)
         await ctx.send("Oppdatert")
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def fjernauto(self, ctx, messageID):
+    @commands.guild_only()
+    @autorules.command(name="fjern")
+    async def removeauto(self, ctx, messageID):
         """Fjerner en melding fra å oppdateres automatisk."""    
-
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
         
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         check_auto(update_path)
@@ -265,14 +227,10 @@ class Rules:
         await ctx.send("autooppdatering fjernet")
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
-    async def listauto(self, ctx):
+    @commands.guild_only()
+    @autorules.command(name="liste")
+    async def list(self, ctx):
         """Gir en liste over meldinger på serveren som er satt til å oppdateres automatisk.""" 
-        
-        # Checks for DMs
-        if ctx.guild == None:
-            await ctx.send("Ikke tilgjengelig i DMs")
-            return
 
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         check_auto(update_path)
@@ -330,8 +288,8 @@ class Rules:
                         if lovtekst == "":
                             return
                         else:
-                            await message.edit(content=lovtekst)
                             await asyncio.sleep(1)
+                            await message.edit(content=lovtekst)
 
 
 

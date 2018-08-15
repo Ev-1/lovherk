@@ -31,8 +31,12 @@ class Events:
         elif isinstance(err, errors.CommandInvokeError):
             pass
 
+        elif isinstance(err, errors.NoPrivateMessage):
+            await ctx.send("Denne kommandoen er ikke tilgjengelig i DMs")
+
         elif isinstance(err, errors.CheckFailure):
-            pass
+            print("Ikke perms")
+            #pass
 
         elif isinstance(err, errors.CommandNotFound):
             pass

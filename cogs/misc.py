@@ -17,25 +17,25 @@ class Misc:
 
 
     @permissions.has_permissions(manage_messages=True)
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def si(self, ctx, *, message: str = None):
         """Får botten til å si det du sier."""
         if message == None:
-            return
-        await ctx.send(message)
-
-
-    @commands.command()
-    async def sislett(self, ctx, *, message: str = None):
-        """Får botten til å si det du sier og sletter den originale meldingen."""
-        if message == None:
-            return
-
-        try:
-            await ctx.message.delete()
             await ctx.send(message)
-        except discord.Forbidden:
-            await ctx.send("Sjekk at jeg har tillatelse til å slette meldinger")
+
+    @permissions.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @si.command()
+    async def slett(self, ctx, *, message: str = None):
+        """Får botten til å si det du sier og sletter den originale meldingen."""
+        
+        if message != None:
+
+            try:
+                await ctx.message.delete()
+                await ctx.send(message)
+            except discord.Forbidden:
+                await ctx.send("Sjekk at jeg har tillatelse til å slette meldinger")
             
 
 
@@ -66,8 +66,6 @@ class Misc:
     @commands.command()
     async def info(self, ctx, *, channel: str = None):
         """Info om LovherkBot"""
-
-        await ctx.send("Bare i command groups")
         
         avatar = self.bot.user.avatar_url_as(format=None, static_format='png', size=1024)
         infotext = "En bot som holder kontroll på reglene i [/r/Norge](https://discord.gg/UeP2tH6)"        
