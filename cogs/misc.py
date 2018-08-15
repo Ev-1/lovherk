@@ -67,7 +67,8 @@ class Misc:
     async def info(self, ctx, *, channel: str = None):
         """Info om LovherkBot"""
 
-
+        await ctx.send("Bare i command groups")
+        
         avatar = self.bot.user.avatar_url_as(format=None, static_format='png', size=1024)
         infotext = "En bot som holder kontroll på reglene i [/r/Norge](https://discord.gg/UeP2tH6)"        
 
