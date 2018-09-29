@@ -1,24 +1,17 @@
-import time
 import discord
-import psutil
 import os
 import codecs
 import re
-import urllib
 import asyncio
 
-#from utils import permissions
 from discord.ext import commands
 
 
 class Rules:
     def __init__(self, bot):
         self.bot = bot
-        self.process = psutil.Process(os.getpid())
 
-
-    #Commands for viewing and editing rules
-
+    # Commands for viewing and editing rules
     @commands.guild_only()
     @commands.group(invoke_without_command=True, name="lov")
     async def rules(self, ctx, lov: str = None,*, num: str = None):
@@ -57,10 +50,7 @@ class Rules:
             await ctx.send("Sjekk at du skrev riktig.")
 
 
-
-
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @rules.command(name="ny")
     async def newrules(self, ctx, lov, *, newrule: str = None):
@@ -81,13 +71,11 @@ class Rules:
         await ctx.send("Regler laget")
 
 
-
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @rules.command(name="plaintext")
     async def plaintext(self, ctx, lov):
-        """Sender reglene i en kodeblokk så de enkelt kan kopieres med formattering."""
+        """Sender reglene i en kodeblokk så de enkelt kan kopieres med formatering."""
 
         lov = translate(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
@@ -101,26 +89,26 @@ class Rules:
             await ctx.send("Sjekk at du skrev riktig.")
 
 
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @rules.command(name="fjern")
     async def removerules(self, ctx, lov):
         """Fjerner regler fra lovherket."""
 
+        hotfix_lov = lov
+
         lov = translate(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
-
         if lov in os.listdir(rules_path):
             rulepath = rules_path + lov
             os.remove(rulepath)
+            remove_auto(ctx, hotfix_lov)
             await ctx.send("Regler fjernet")
         else:
             await ctx.send("Reglene du skrev inn finnes ikke")
 
 
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @rules.command(name="oppdater")
     async def updaterules(self, ctx, lov, *, newrule: str = None):
@@ -145,13 +133,11 @@ class Rules:
 
 
     # Automatic updating of rules.
-
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @commands.group(invoke_without_command=True, name = "auto")
     async def autorules(self, ctx, lov, channel, messageID):
-        """Setter en melding til å automatisk oppdateres når regler endres."""
+        """Setter en gammel melding til å automatisk oppdateres når regler endres."""
 
         # Try to find the message
         try:
@@ -191,42 +177,71 @@ class Rules:
                     f.write(new_auto)
                 await ctx.send("Regel satt til å oppdateres automatisk")
 
-
         await self.update_messages(ctx)
 
 
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @autorules.command(name="fiks")
     async def fixauto(self, ctx):
-        """Prøver å oppdatere meldingene som skal oppdateres automatisk."""    
-
+        """Prøver å oppdatere meldingene som skal oppdateres automatisk."""
         await self.update_messages(ctx)
         await ctx.send("Oppdatert")
 
 
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @autorules.command(name="ny")
+    async def postauto(self, ctx, lov: str = None):
+        """Sender en melding som automatisk oppdateres når reglene oppdateres"""
+
+        hotfix_lov = lov
+
+        if lov == None:
+            await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
+            return
+
+        lov = translate(lov)
+        rules_path = get_server_path(ctx.guild.id) + "rules/"
+
+        if lov in os.listdir(rules_path):
+            rulepath = rules_path + lov
+            with codecs.open(rulepath,'r',encoding='utf8') as lov:
+                lovtekst = lov.read()
+                if lovtekst == "":
+                    await ctx.send("Denne regelen er helt tom.")
+                    return
+
+            if lovtekst == "":
+                await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
+                return
+
+            msg = await ctx.send(lovtekst)
+
+            update_path = get_server_path(msg.guild.id) + 'autoupdate.txt'
+            check_auto(update_path)
+            
+            with codecs.open(update_path, 'r', encoding='utf8') as f:
+                auto_list = f.read()
+                f.close()
+                new_auto = "{} {} {}\n".format(hotfix_lov, msg.channel.id, msg.id)
+
+                with codecs.open(update_path, 'a', encoding='utf8') as f:
+                    f.write(new_auto)
+        else:
+            await ctx.send("Sjekk at du skrev riktig.")
+
+
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @autorules.command(name="fjern")
-    async def removeauto(self, ctx, messageID):
-        """Fjerner en melding fra å oppdateres automatisk."""    
-        
-        update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
-        check_auto(update_path)
-        to_remove = messageID
-
-        with codecs.open(update_path, 'r', encoding='utf8') as f:
-            lines = f.readlines()
-            f.close()
-
-        with codecs.open(update_path, 'w', encoding='utf8') as f:
-            for line in lines:
-                if to_remove not in line:
-                    f.write(line)
-
+    async def _remauto(self, ctx, messageID):
+        """Fjerner en melding fra lista av meldinger som oppdateres automatisk."""    
+        remove_auto(ctx, messageID)
         await ctx.send("autooppdatering fjernet")
 
-    @permissions.has_permissions(manage_messages=True)
+
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @autorules.command(name="liste")
     async def list(self, ctx):
@@ -253,11 +268,7 @@ class Rules:
             await ctx.send(auto_list_message)
 
 
-
-
-
     async def update_messages(self, ctx):
-
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
@@ -292,6 +303,20 @@ class Rules:
                             await message.edit(content=lovtekst)
 
 
+    async def remove_auto(self, ctx, search_term):
+        update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
+        check_auto(update_path)
+        to_remove = search_term
+
+        with codecs.open(update_path, 'r', encoding='utf8') as f:
+            lines = f.readlines()
+            f.close()
+
+        with codecs.open(update_path, 'w', encoding='utf8') as f:
+            for line in lines:
+                if to_remove not in line:
+                    f.write(line)
+
 
 def setup(bot):
     bot.add_cog(Rules(bot))
@@ -299,10 +324,8 @@ def setup(bot):
 
 
 def get_rules_list(server_ID):
-    
     temp = get_server_path(server_ID)
     rules_path = temp + 'rules'
-
     lover = ""
     
     for lov in os.listdir(rules_path):
@@ -316,11 +339,11 @@ def get_rules_list(server_ID):
             lover += '•' + lov.replace(".txt","") + "\n"
     return lover
 
+
 def translate(lov):
+    lov = lov.lower()
     if lov[1] == '#':
         lov = lov[1:-1]
-    if lov == "grunnloven":
-        lov = "Grunnloven"
     lov += '.txt'
     return lov
 

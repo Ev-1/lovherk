@@ -1,29 +1,23 @@
-import time
 import discord
-import psutil
 import os
-import codecs
 import asyncio
 
-#from utils import permissions
 from discord.ext import commands
 
 
 class Misc:
     def __init__(self, bot):
         self.bot = bot
-        self.process = psutil.Process(os.getpid())
 
-
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.group(invoke_without_command=True)
     async def si(self, ctx, *, message: str = None):
         """Får botten til å si det du sier."""
-        if message == None:
+        if message != None:
             await ctx.send(message)
 
-    @permissions.has_permissions(manage_messages=True)
+
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @si.command()
     async def slett(self, ctx, *, message: str = None):
@@ -38,8 +32,7 @@ class Misc:
                 await ctx.send("Sjekk at jeg har tillatelse til å slette meldinger")
             
 
-
-    @permissions.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.command()
     async def kanal(self, ctx, *, channel: str = None):
         """Ber brukere gå til en annen kanal."""
@@ -78,7 +71,6 @@ class Misc:
         embed.add_field(name="Hvorfor er dette en kommando?", value="Fordi Even#0001 ville lære seg å lage embeds", inline=False)
         embed.set_footer(text = ":)")
         await ctx.send(embed=embed)
-
 
 
 def setup(bot):
