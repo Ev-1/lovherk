@@ -5,7 +5,7 @@ import os
 import codecs
 import asyncio
 
-from utils import permissions
+#from utils import permissions
 from discord.ext import commands
 
 
