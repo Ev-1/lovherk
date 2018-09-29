@@ -17,9 +17,10 @@ print(prefix)
 bot = Bot(command_prefix=prefix, prefix=prefix)
 
 
-for file in os.listdir("cogs"):
-    if file.endswith(".py"):
-        name = file[:-3]
-        bot.load_extension(f"cogs.{name}")
+#for file in os.listdir("cogs"):
+#    if file.endswith(".py"):
+#        name = file[:-3]
+#        bot.load_extension(f"cogs.{name}")
+bot.load_extension("cogs.test")
 
 bot.run(token)

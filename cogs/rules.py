@@ -7,7 +7,7 @@ import re
 import urllib
 import asyncio
 
-from utils import permissions
+#from utils import permissions
 from discord.ext import commands
 
 
