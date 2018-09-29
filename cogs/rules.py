@@ -21,14 +21,14 @@ class Rules:
             await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
             return
 
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
 
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
-            with codecs.open(rulepath,'r',encoding='utf8') as lov:
-                lovtekst = lov.read()
+        if rule_file in os.listdir(rules_path):
+            rulepath = rules_path + rule_file
+            with codecs.open(rulepath,'r',encoding='utf8') as f:
+                lovtekst = f.read()
                 if lovtekst == "":
                     await ctx.send("Denne regelen er helt tom.")
                     return
@@ -56,17 +56,17 @@ class Rules:
     async def newrules(self, ctx, lov, *, newrule: str = None):
         """Legger til et nytt sett med regler i lovherket."""
 
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
-        if lov in os.listdir(rules_path):
+        if rule_file in os.listdir(rules_path):
             await ctx.send("Det finnes allerede et sett med regler med det navnet.")
             return
         
-        rulepath = rules_path + lov
-        with codecs.open(rulepath, 'w+', encoding='utf8') as lov:
+        rulepath = rules_path + rule_file
+        with codecs.open(rulepath, 'w+', encoding='utf8') as f:
             if newrule != None:
-                lov.write(newrule)
+                f.write(newrule)
 
         await ctx.send("Regler laget")
 
@@ -77,13 +77,13 @@ class Rules:
     async def plaintext(self, ctx, lov):
         """Sender reglene i en kodeblokk så de enkelt kan kopieres med formatering."""
 
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
-            with codecs.open(rulepath,'r',encoding='utf8') as lov:
-                lovtekst = lov.read()
+        if rule_file in os.listdir(rules_path):
+            rulepath = rules_path + rule_file
+            with codecs.open(rulepath,'r',encoding='utf8') as f:
+                lovtekst = f.read()
             await ctx.send("```\n" + lovtekst + "\n```")
         else:
             await ctx.send("Sjekk at du skrev riktig.")
@@ -95,14 +95,12 @@ class Rules:
     async def removerules(self, ctx, lov):
         """Fjerner regler fra lovherket."""
 
-        hotfix_lov = lov
-
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
+        if rule_file in os.listdir(rules_path):
+            rulepath = rules_path + rule_file
             os.remove(rulepath)
-            remove_auto(ctx, hotfix_lov)
+            await self.remove_auto(ctx, lov)
             await ctx.send("Regler fjernet")
         else:
             await ctx.send("Reglene du skrev inn finnes ikke")
@@ -118,13 +116,13 @@ class Rules:
             await ctx.send("Du skrev ikke inn noe")
             return
 
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
-            with codecs.open(rulepath,'w',encoding='utf8') as lov:
-                lov.write(newrule)
+        if rule_file in os.listdir(rules_path):
+            rulepath = rules_path + rule_file
+            with codecs.open(rulepath,'w',encoding='utf8') as f:
+                f.write(newrule)
             await self.update_messages(ctx)
             await ctx.send("Regler oppdatert")
 
@@ -195,19 +193,17 @@ class Rules:
     async def postauto(self, ctx, lov: str = None):
         """Sender en melding som automatisk oppdateres når reglene oppdateres"""
 
-        hotfix_lov = lov
-
         if lov == None:
             await ctx.send("**Liste over lovene i lovherket:**\n{}".format(get_rules_list(ctx.guild.id)))
             return
 
-        lov = translate(lov)
+        rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
-        if lov in os.listdir(rules_path):
-            rulepath = rules_path + lov
-            with codecs.open(rulepath,'r',encoding='utf8') as lov:
-                lovtekst = lov.read()
+        if rule_file in os.listdir(rules_path):
+            rulepath = rules_path + rule_file
+            with codecs.open(rulepath,'r',encoding='utf8') as f:
+                lovtekst = f.read()
                 if lovtekst == "":
                     await ctx.send("Denne regelen er helt tom.")
                     return
@@ -224,7 +220,7 @@ class Rules:
             with codecs.open(update_path, 'r', encoding='utf8') as f:
                 auto_list = f.read()
                 f.close()
-                new_auto = "{} {} {}\n".format(hotfix_lov, msg.channel.id, msg.id)
+                new_auto = "{} {} {}\n".format(lov, msg.channel.id, msg.id)
 
                 with codecs.open(update_path, 'a', encoding='utf8') as f:
                     f.write(new_auto)
@@ -237,7 +233,7 @@ class Rules:
     @autorules.command(name="fjern")
     async def _remauto(self, ctx, messageID):
         """Fjerner en melding fra lista av meldinger som oppdateres automatisk."""    
-        remove_auto(ctx, messageID)
+        await self.remove_auto(ctx, messageID)
         await ctx.send("autooppdatering fjernet")
 
 
@@ -290,10 +286,10 @@ class Rules:
                         await ctx.send("En melding er ikke funnet, det kan hende den er slettet. Kanal: <#{}>, ID: {}".format(channelID, messageID))
                         return
 
-                    lov = translate(lov)
+                    rule_file = get_file_name(lov)
 
-                    if lov in os.listdir(rules_path):
-                        rulepath = rules_path + lov
+                    if rule_file in os.listdir(rules_path):
+                        rulepath = rules_path + rule_file
                         with codecs.open(rulepath,'r',encoding='utf8') as g:
                             lovtekst = g.read()
                         if lovtekst == "":
@@ -340,7 +336,7 @@ def get_rules_list(server_ID):
     return lover
 
 
-def translate(lov):
+def get_file_name(lov):
     lov = lov.lower()
     if lov[1] == '#':
         lov = lov[1:-1]
