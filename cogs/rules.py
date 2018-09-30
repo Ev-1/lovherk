@@ -24,7 +24,6 @@ class Rules:
         rule_file = get_file_name(lov)
         rules_path = get_server_path(ctx.guild.id) + "rules/"
 
-
         if rule_file in os.listdir(rules_path):
             rulepath = rules_path + rule_file
             with codecs.open(rulepath,'r',encoding='utf8') as f:
@@ -152,12 +151,10 @@ class Rules:
         except:
             await ctx.send("Melding ikke funnet")
             return
-    
 
         if message.author != self.bot.user:
             await ctx.send("Sjekk at meldingen tilhører botten")
             return
-
 
         update_path = get_server_path(ctx.guild.id) + 'autoupdate.txt'
         check_auto(update_path)
@@ -327,12 +324,12 @@ def get_rules_list(server_ID):
     for lov in os.listdir(rules_path):
         if lov == None:
             continue
-        elif lov == "Grunnloven.txt":
-            lover = '•' + lov.replace(".txt","") + "\n" + lover
+        elif lov == "grunnloven.txt":
+            lover = '•' + lov.replace(".txt","").capitalize() + "\n" + lover
         elif lov[0] == '#':
             lover += '•' + '<' + lov.replace(".txt","") + '>' + "\n"
         else:
-            lover += '•' + lov.replace(".txt","") + "\n"
+            lover += '•' + lov.replace(".txt","").capitalize() + "\n"
     return lover
 
 
