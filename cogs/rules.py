@@ -129,25 +129,38 @@ class Rules:
             await ctx.send("Sjekk at du skrev riktig.")
 
 
-    # Automatic updating of rules.
+    """ Below here are commands used to update previous messages when the rules are updated
+
+        
+    """
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @commands.group(invoke_without_command=True, name = "auto")
-    async def autorules(self, ctx, lov, channel, messageID):
+    async def autorules(self, ctx, lov, message_link):
         """Setter en gammel melding til å automatisk oppdateres når regler endres."""
 
-        # Try to find the message
         try:
-            channelID = channel[2:-1]        
-            channel = ctx.guild.get_channel(int(channelID))
-        
+            message_split = message_link.split("/")
+        except:
+            await ctx.send("Det er noe feil med linken")
+    
+        message_id = int(message_split[-1])
+        channel_id = int(message_split[-2])
+        guild_id = int(message_split[-3])
+
+        if ctx.guild.id != int(guild_id):
+            await ctx.send("Den meldingen er ikke på denne serveren")
+            return
+
+        # Try to find the message
+        try:        
+            channel = ctx.guild.get_channel(channel_id)
         except:
             await ctx.send("Kanal ikke funnet")
             return
 
         try:
-            message = await channel.get_message(messageID)
-        
+            message = await channel.get_message(message_id)
         except:
             await ctx.send("Melding ikke funnet")
             return
@@ -163,7 +176,7 @@ class Rules:
             auto_list = f.read()
             f.close()
 
-            new_auto = "{} {} {}\n".format(lov, channelID, messageID)
+            new_auto = "{} {} {}\n".format(lov, channel_id, message_id)
 
             if new_auto in auto_list:
                 await ctx.send("Allerede satt til å oppdateres")
@@ -186,7 +199,7 @@ class Rules:
 
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    @autorules.command(name="ny")
+    @rules.command(name="auto")
     async def postauto(self, ctx, lov: str = None):
         """Sender en melding som automatisk oppdateres når reglene oppdateres"""
 
@@ -228,9 +241,9 @@ class Rules:
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @autorules.command(name="fjern")
-    async def _remauto(self, ctx, messageID):
+    async def _remauto(self, ctx, message_id):
         """Fjerner en melding fra lista av meldinger som oppdateres automatisk."""    
-        await self.remove_auto(ctx, messageID)
+        await self.remove_auto(ctx, message_id)
         await ctx.send("autooppdatering fjernet")
 
 
@@ -250,8 +263,7 @@ class Rules:
         if auto_list == "" or auto_list == "\n":
             await ctx.send("Ingen meldinger er satt til autooppdatering")
         else:
-
-            auto_list_message = "**Meldinger satt til autooppdatering:**\n"
+            auto_list_message = "**Meldinger satt til autooppdatering:**\nRegel: *link til melding*\n"
 
             for auto in auto_list:
                 if auto.strip() != "":
@@ -273,14 +285,14 @@ class Rules:
             
             for line in content:
                 if line.strip() != "":
-                    lov, channelID, messageID = line.split(" ")
+                    lov, channel_id, message_id = line.split(" ")
                     
                     try:
-                        channel = ctx.guild.get_channel(int(channelID))
-                        message = await channel.get_message(messageID)
+                        channel = ctx.guild.get_channel(int(channel_id))
+                        message = await channel.get_message(message_id)
 
                     except:
-                        await ctx.send("En melding er ikke funnet, det kan hende den er slettet. Kanal: <#{}>, ID: {}".format(channelID, messageID))
+                        await ctx.send("En melding er ikke funnet, det kan hende den er slettet. Kanal: <#{}>, ID: {}".format(channel_id, message_id))
                         return
 
                     rule_file = get_file_name(lov)
