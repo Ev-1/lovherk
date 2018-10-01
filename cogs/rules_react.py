@@ -152,7 +152,7 @@ class RulesReact:
         except:
             await ctx.send("Det er noe feil med linken")
     
-        message_id = int(message_split[-1])
+        message_id = message_split[-1]
         channel_id = int(message_split[-2])
         guild_id = int(message_split[-3])
 
@@ -162,7 +162,7 @@ class RulesReact:
 
         # Try to find the message
         try:        
-            channel = self.bot.guild.get_channel(channel_id)
+            channel = self.bot.get_channel(channel_id)
         except:
             await ctx.send("Kanal ikke funnet")
             return
