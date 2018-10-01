@@ -191,7 +191,6 @@ class RulesReact:
             else:
                 with codecs.open(update_path, 'a', encoding='utf8') as f:
                     f.write(new_react)
-                await message.clear_reactions()
                 await message.add_reaction(self.emoji)
                 await ctx.send("reaksjonsregler lagt til")
 
