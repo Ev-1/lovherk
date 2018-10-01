@@ -282,9 +282,10 @@ class RulesReact:
                     await msg.remove_reaction(self.emoji,user)
                     await self.dm_rules(user, payload.guild_id, channel, payload.message_id)
             else:
-                channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
-                await msg.clear_reactions()
+                if payload.user_id != self.bot.user.id:
+                    channel = self.bot.get_channel(payload.channel_id)
+                    msg = await channel.get_message(payload.message_id)
+                    await msg.clear_reactions()
 
 
     async def dm_rules(self, user, guild_id, channel, message_id):
