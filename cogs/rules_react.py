@@ -185,14 +185,15 @@ class RulesReact:
             f.close()
 
             new_react = "{} {} {}\n".format(lov, channel_id, message_id)
-            ctx.send("new react")
+            await ctx.send("new react")
             if new_react in react_list:
                 await ctx.send("Meldingen har allerede regler som DMes")
             else:
                 try:
                     with codecs.open(update_path, 'a', encoding='utf8') as f:
                         f.write(new_react)
-                    print(message)
+                    await message.clear_reactions()
+                    await asyncio.sleep(3)
                     await message.add_reaction(self.emoji)
                     await ctx.send("reaksjonsregler lagt til")
                 except:
