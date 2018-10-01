@@ -162,7 +162,7 @@ class RulesReact:
 
         # Try to find the message
         try:        
-            channel = ctx.guild.get_channel(channel_id)
+            channel = self.bot.guild.get_channel(channel_id)
         except:
             await ctx.send("Kanal ikke funnet")
             return
@@ -185,14 +185,18 @@ class RulesReact:
             f.close()
 
             new_react = "{} {} {}\n".format(lov, channel_id, message_id)
-
+            ctx.send("new react")
             if new_react in react_list:
                 await ctx.send("Meldingen har allerede regler som DMes")
             else:
-                with codecs.open(update_path, 'a', encoding='utf8') as f:
-                    f.write(new_react)
-                await message.add_reaction(self.emoji)
-                await ctx.send("reaksjonsregler lagt til")
+                try:
+                    with codecs.open(update_path, 'a', encoding='utf8') as f:
+                        f.write(new_react)
+                    print(message)
+                    await message.add_reaction(self.emoji)
+                    await ctx.send("reaksjonsregler lagt til")
+                except:
+                    await ctx.send("Får ikke reacta")
 
 
     @commands.has_permissions(manage_messages=True)
@@ -282,7 +286,7 @@ class RulesReact:
                     await msg.remove_reaction(self.emoji,user)
                     await self.dm_rules(user, payload.guild_id, channel, payload.message_id)
             else:
-                if payload.user_id != self.bot.user.id:
+                if added and payload.user_id != self.bot.user.id:
                     channel = self.bot.get_channel(payload.channel_id)
                     msg = await channel.get_message(payload.message_id)
                     await msg.clear_reactions()
