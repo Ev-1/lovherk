@@ -204,6 +204,31 @@ class RulesReact:
         await ctx.send("Reaksjon fjernet fjernet")
 
 
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @add_react.command(name="liste")
+    async def list(self, ctx):
+        """Gir en liste over meldinger på serveren som er satt til å oppdateres automatisk.""" 
+
+        update_path = get_server_path(ctx.guild.id) + 'react_messages.txt'
+        check_auto(update_path)
+   
+        with codecs.open(update_path, 'r', encoding='utf8') as f:
+            auto_list = f.readlines()
+            f.close()
+
+        if auto_list == "" or auto_list == "\n":
+            await ctx.send("Ingen meldinger har reaksjonsregler")
+        else:
+            auto_list_message = "**Meldinger med reaksjonsregler:**\nRegel: *link til melding*\n"
+            for auto in auto_list:
+                if auto.strip() != "":
+                    guild_id = str(ctx.guild.id)
+                    lov, channel_id, message_id = auto.split(" ")
+                    auto_list_message += lov + ": https://discordapp.com/channels/" + guild_id + "/" + channel_id + "/" + message_id
+            await ctx.send(auto_list_message) 
+
+
     async def remove_react_rule(self, ctx, search_term):
         update_path = get_server_path(ctx.guild.id) + 'react_messages.txt'
         check_auto(update_path)
@@ -229,13 +254,11 @@ class RulesReact:
 
 
     async def on_raw_reaction_add(self, payload):
-        if str(payload.emoji) == self.emoji:
-            await self.react_action(payload, True)
+        await self.react_action(payload, True)
 
 
     async def on_raw_reaction_remove(self, payload):
-        if str(payload.emoji) == self.emoji:
-            await self.react_action(payload, False)
+        await self.react_action(payload, False)
 
 
     async def on_raw_reaction_clear(self, payload):
@@ -246,18 +269,23 @@ class RulesReact:
 
 
     async def react_action(self, payload, added):
-        if check_message_in_list(payload.guild_id, payload.message_id):        
-            if not added and payload.user_id == self.bot.user.id:
-                channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
-                await msg.add_reaction(self.emoji)
+        if check_message_in_list(payload.guild_id, payload.message_id):
+            if str(payload.emoji) == self.emoji:
+                if not added and payload.user_id == self.bot.user.id:
+                    channel = self.bot.get_channel(payload.channel_id)
+                    msg = await channel.get_message(payload.message_id)
+                    await msg.add_reaction(self.emoji)
 
-            if added and payload.user_id != self.bot.user.id:
+                if added and payload.user_id != self.bot.user.id:
+                    channel = self.bot.get_channel(payload.channel_id)
+                    msg = await channel.get_message(payload.message_id)
+                    user = self.bot.get_user(payload.user_id)
+                    await msg.remove_reaction(self.emoji,user)
+                    await self.dm_rules(user, payload.guild_id, channel, payload.message_id)
+            else:
                 channel = self.bot.get_channel(payload.channel_id)
                 msg = await channel.get_message(payload.message_id)
-                user = self.bot.get_user(payload.user_id)
-                await msg.remove_reaction(self.emoji,user)
-                await self.dm_rules(user, payload.guild_id, channel, payload.message_id)
+                await msg.clear_reactions()
 
 
     async def dm_rules(self, user, guild_id, channel, message_id):
