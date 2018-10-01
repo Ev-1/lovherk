@@ -191,6 +191,7 @@ class RulesReact:
             else:
                 with codecs.open(update_path, 'a', encoding='utf8') as f:
                     f.write(new_react)
+                await message.clear_reactions()
                 await message.add_reaction(self.emoji)
                 await ctx.send("reaksjonsregler lagt til")
 
@@ -243,7 +244,6 @@ class RulesReact:
                 if to_remove not in line:
                     f.write(line)
         
-        print(lines)
         for line in lines:
             if to_remove in line:
                 channel_id, message_id = line.split(" ")[-2], line.split(" ")[-1]
