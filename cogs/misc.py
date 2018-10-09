@@ -54,6 +54,14 @@ class Misc:
 
 
     @commands.command()
+    @commands.is_owner()
+    async def servers(self, ctx):
+        servers = f"{self.bot.user.name} is in:\n"
+        for server in self.bot.guilds:
+            servers += f"{server.name}\n"
+        await ctx.send(servers)
+
+    @commands.command()
     async def info(self, ctx, *, channel: str = None):
         """Info om LovherkBot"""
         

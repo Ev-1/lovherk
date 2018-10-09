@@ -269,6 +269,7 @@ class RulesReact:
         if check_message_in_list(payload.guild_id, payload.message_id):        
             channel = self.bot.get_channel(payload.channel_id)
             msg = await channel.get_message(payload.message_id)
+            await asyncio.sleep(2)
             await msg.add_reaction(self.emoji)
 
 
