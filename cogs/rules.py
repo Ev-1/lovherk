@@ -374,7 +374,7 @@ class Rules:
         await ctx.send("Oppdatert")
 
     @_auto_settings.command(name="liste")
-    async def list(self, ctx):
+    async def _auto_list(self, ctx):
         """
         Gir en liste over meldinger som er satt til å oppdateres automatisk.
         """
@@ -465,7 +465,7 @@ class Rules:
                            f'{rules.get_rules_formatted(alternate=True)}')
 
     @_react_settings.command(name="liste")
-    async def list(self, ctx):
+    async def _react_list(self, ctx):
         """
         Gir en liste over meldinger som er satt til å oppdateres automatisk.
         """
