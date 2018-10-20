@@ -37,6 +37,8 @@ class RuleManager(object):
             self._server = json.load(read_file)
 
     def add_rule(self, name, rule_text, alternaterule: str=None):
+        if name is not None:
+            name = name.lower()
         if any(rule for rule in self._server["rules"] if rule["name"] == name):
             return False
 
@@ -53,6 +55,8 @@ class RuleManager(object):
 
     def remove_rule(self, name, alternate: bool=False):
         # Add handling for removing rules with autoupdate
+        if name is not None:
+            name = name.lower()
         _rule = self._get_rule(name)
         if _rule is not None:
             if alternate:
@@ -69,6 +73,8 @@ class RuleManager(object):
         return False
 
     def edit_rule(self, name, new_rule_text, alternate: bool=False):
+        if name is not None:
+            name = name.lower()
         _rule = self._get_rule(name)
         if _rule is not None:
             if alternate:
@@ -80,6 +86,8 @@ class RuleManager(object):
         return False
 
     def get_rule_text(self, name, alternate: bool=False):
+        if name is not None:
+            name = name.lower()
         _rule = self._get_rule(name)
         if _rule is not None:
             if alternate:
@@ -100,6 +108,8 @@ class RuleManager(object):
         return formatted_rules
 
     def add_link_setting(self, setting, name, link):
+        if name is not None:
+            name = name.lower()
         rule = self._get_rule(name)
         if rule is not None:
             if any(msg for msg in self._server["settings"][setting]
@@ -112,6 +122,9 @@ class RuleManager(object):
         return False
 
     def remove_link_setting(self, setting, match_type, to_match):
+        if to_match is not None:
+            to_match = to_match.lower()
+
         removed = False
         for message in reversed(self._server["settings"][setting]):
             if message[match_type] == to_match:
