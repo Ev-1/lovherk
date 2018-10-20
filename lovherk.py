@@ -5,7 +5,7 @@ import discord
 
 from discord.ext import commands
 
-with codecs.open("config.json", 'r',encoding='utf8') as f:
+with codecs.open("config.json", 'r', encoding='utf8') as f:
     data = json.load(f)
     token = data["token"]
     prefix = data["prefix"]
@@ -20,9 +20,12 @@ for file in os.listdir("cogs"):
         name = file[:-3]
         bot.load_extension(f"cogs.{name}")
 
+
 @bot.event
 async def on_ready():
-    print(f'\nLogged in as: {bot.user.name} in {len(bot.guilds)} servers. \nVersion: {discord.__version__}\n')
-    await bot.change_presence(activity=discord.Game(type=0, name=status), status=discord.Status.online)
+    print(f'\nLogged in as: {bot.user.name} in {len(bot.guilds)} servers.')
+    print(f'Version: {discord.__version__}\n')
+    await bot.change_presence(activity=discord.Game(type=0, name=status),
+                              status=discord.Status.online)
 
 bot.run(token, bot=True, reconnect=True)
