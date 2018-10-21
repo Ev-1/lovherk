@@ -1,17 +1,18 @@
 
 # Hvordan bruke lovherket
 
-#####Hvordan lese "help" meldinger:
+
+####Hvordan lese "help" meldinger:
 
 - <argument> betyr at argumentet er obligatorisk
 - [argument] betyr at argumentet er valgfritt
 - [argument=default] betyr at argumentet er valgfritt, men vil bli "default" om du ikke skriver inn noe.
 
-Ikke ta med <> eller [] som en del av kommandoene
+Ikke ta med <> eller [] som en del av kommandoene.
 
 
 
-Jeg beklager eventuell inkonsekvent valg av variabelnavn i kommandoer og dårlig blanding av norsk og engelsk.😐
+Jeg beklager for dårlig blanding av norsk og engelsk.😐
 
 
 # Regler
@@ -46,7 +47,7 @@ og være på en egen linje. Her er n er nummeret til regelen. Eks.
 
 
 ### Autoopdatering
-![autooppdatering](https://i.imgur.com/OKuZxD3.png)
+![regler](https://i.imgur.com/OKuZxD3.png)
 
 Bruk `§autoset` kommandoen for å styre hvilke meldinger som skal oppdateres automatisk når reglene endres.
 
@@ -68,7 +69,7 @@ Bruk `§autoset` kommandoen for å styre hvilke meldinger som skal oppdateres au
 
 
 ### Reaksjonsregler
-![reaksjonsregler](https://i.imgur.com/KFlrLv9.png)
+![regler](https://i.imgur.com/KFlrLv9.png)
 
 Bruk `§reactset` kommandoen for å styre hvilke meldinger som har en "alternativ" versjon(Oversettelse til engelsk) og hvilke meldinger som skal ha en emoji(📨) man kan trykke på for å tilsendt disse reglene.
 
