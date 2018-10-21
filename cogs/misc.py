@@ -15,7 +15,7 @@ class Misc:
         """
         Får botten til å si det du sier.
         """
-        if message is None:
+        if message is not None:
             await ctx.send(message)
 
     @commands.guild_only()

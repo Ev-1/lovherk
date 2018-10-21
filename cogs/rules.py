@@ -300,7 +300,7 @@ class Rules:
                             f'{rules.get_rules_formatted()}')
             return
 
-        rules.change_setting("default_rule", lov)
+        rules.change_setting("default_rule", lov.lower())
         await ctx.send(f'{lov} er nå serverens default regel')
 
     """
@@ -319,7 +319,7 @@ class Rules:
                              ctx.command.qualified_name)
 
     @_auto_settings.command(name="post")
-    async def postauto(self, ctx, lov: str=None):
+    async def postauto(self, ctx, lov):
         """
         Sender en melding som automatisk oppdateres når reglene oppdateres.
         """
@@ -327,12 +327,13 @@ class Rules:
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send('**Liste over lovene i lovherket:**\n' +
+            await ctx.send('Sjekk at reglene finnes.\n' + 
+                           '**Liste over lovene i lovherket:**\n' +
                            f'{rules.get_rules_formatted()}')
             return
 
         if rule_text == "":
-            await ctx.send("Denne regelen er helt tom.")
+            await ctx.send("Den regelen er helt tom.")
             return
 
         msg = await ctx.send(rule_text)
@@ -421,7 +422,7 @@ class Rules:
     @commands.group(name="reactset")
     async def _react_settings(self, ctx):
         """
-        Innstillinger for automatisk regeloppdatering.
+        Innstillinger for react-regles.
         """
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'),
@@ -459,7 +460,7 @@ class Rules:
         rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
         rule_text = rules.get_rule_text(lov, alternate=True)
         if rule_text is not None:
-            await ctx.send(rule_text)
+            await ctx.send("```\n" + rule_text + "\n```")
         else:
             await ctx.send('**Liste over react-regler i lovherket:**\n' +
                            f'{rules.get_rules_formatted(alternate=True)}')
@@ -475,7 +476,7 @@ class Rules:
         list_message = '**Meldinger med react-regler:**\n'
 
         if len(react_messages) == 0:
-            await ctx.send("Ingen meldinger er satt til autooppdatering")
+            await ctx.send("Ingen meldinger er satt opp for reacts")
             return
 
         for message in react_messages:
