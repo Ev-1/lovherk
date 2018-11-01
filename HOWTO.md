@@ -10,9 +10,31 @@
 
 Ikke ta med <> eller [] som en del av kommandoene.
 
-
+#### Obs! 
+Alle kommandoene her er skrevet uten en prefiks siden den kan endres. Så f.eks. `lovset fjern <lov>` vil kunne se ut som `§lovset fjern <lov>` eller `!lovset fjern <lov>` avhengig av hvilke(n) prefiks(er) som er valgt.
 
 Jeg beklager for dårlig blanding av norsk og engelsk.😐
+
+# Vise regler
+
+- `lov [lov] [num]`
+  - Viser valgte regler.
+
+`[lov]` er her det settet med regler man vil vise.
+
+`[num]` er de reglene fra det valgte settet man vil vise. Er num ikke oppgitt så vil alle reglene vises. [num] en liste med tall separert av mellomrom.
+
+Om et standard regelsett er satt(se `lovset default`), så vil det gå an å la være å skrive inn `[lov]`.
+
+Eksempler
+- `lov #kanal`
+  - viser alle reglene som er satt opp for #kanal
+- `lov #kanal 2`
+  - viser regel 2 i regelsettet som heter #kanal.
+- `lov #kanal 2 5 6`
+  - viser regel 2, 5 og 6 i regelsettet som heter #kanal.
+
+Hvis default er satt til et sett ved navn `grunnregler` vil `lov grunnregler 1 3` og `lov 1 3` gi samme resultat. Merk at dette gjelder bare om man oppgir spesifikke regler. `lov` vil fortsatt vise alle regelsettene i lovherket og `lov grunnregler` vil vise alle reglene i `regler` 
 
 
 # Regler
@@ -21,13 +43,13 @@ Jeg beklager for dårlig blanding av norsk og engelsk.😐
 Man kan endre på reglene i lovherket med `§lovset` kommandoen.
 
 - `lovset ny <lov> [newrule]`
-  - Lager et nytt sett med regler med navn <lov>. [newrule] er frivillig siden hva reglene skal inneholde kan endres på med lovset oppdater.
+  - Lager et nytt sett med regler med navnet gitt i `<lov>`. `[newrule]` er frivillig siden hva reglene skal inneholde kan endres på med lovset oppdater.
 
 - `lovset oppdater <lov> [newrule]`
-  - Oppdaterer teksten til et sett med regler. Her er <lov> navnet reglene og <newrule> det reglene skal endres til.
+  - Oppdaterer teksten til et sett med regler. Her er `<lov>` navnet på reglene og `<newrule>` det reglene skal endres til.
 
 - `lovset fjern <lov>`
-  - Fjerner reglene med navn <lov>.
+  - Fjerner reglene med navn `<lov>`.
 
 - `lovset plaintext <lov>`
   - Sender reglene i en kodeblokk sånn at de kan kopieres med formatering.
@@ -52,7 +74,7 @@ og være på en egen linje. Her er n er nummeret til regelen. Eks.
 Bruk `§autoset` kommandoen for å styre hvilke meldinger som skal oppdateres automatisk når reglene endres.
 
 - `autoset add <lov> <link>`
-  - Gjør at meldingen som er lenket til oppdateres automatisk. Da skal oppdateres om reglene med navn <lov> oppdateres. Nyttig for dette for festa(pinned) meldinger.
+  - Gjør at meldingen som er lenket til oppdateres automatisk. Da skal oppdateres om reglene med navn `<lov>` oppdateres. Nyttig for dette for festa(pinned) meldinger.
 
 - `autoset fjern <link>`
   - Gjør det motsatte av `add`, gjør at meldingen lenket til ikke lenger oppdateres automatisk.
@@ -64,7 +86,7 @@ Bruk `§autoset` kommandoen for å styre hvilke meldinger som skal oppdateres au
   - Får Lovherket til å forsøke å oppdatere alle meldingene som har blitt satt til oppdatering.
 
 - `autoset post <lov>`
-  - Får lovherket til å sende en melding med reglene i <lov> som automatisk blir satt til å oppdateres.
+  - Får lovherket til å sende en melding med reglene i `<lov>` som automatisk blir satt til å oppdateres.
 
 
 
@@ -81,10 +103,10 @@ Siden disse reglene skal være andre versjoner av de vanlige er de heller ikke t
   - Funker som `lovset oppdater` men endrer på reaksjonsreglene.
 
 - `reactset fjern <lov>`
-  - Fjerner de alternative reglene for <lov> og reaksjonene som sender dem.
+  - Fjerner de alternative reglene for `<lov>` og reaksjonene som sender dem.
 
 - `reactset link <lov> <link>`
-  - Fungerer som `autoset add`. Kobler sammen en melding og en reaksjon som sender <lov> sine alternative regler.
+  - Fungerer som `autoset add`. Kobler sammen en melding og en reaksjon som sender `<lov>` sine alternative regler.
 
 - `reactset unlink <link>`
   - Fjerner koblingen mellom en melding og en reaksjon, fjerner også reaksjonen om Lovherket har tilgang til meldingen.
@@ -96,7 +118,7 @@ Siden disse reglene skal være andre versjoner av de vanlige er de heller ikke t
   - Brukes for å vise de alternative reglene i lovherket. De vil sendes som "plaintext" sånn som `lovset plaintext` gjør.
 
 
-#Andre kommandoer
+### Andre kommandoer
 
 - `kanal #kanal`
   - Ber brukere gå til #kanal.
@@ -109,14 +131,14 @@ Siden disse reglene skal være andre versjoner av de vanlige er de heller ikke t
 
 
 
-##### Forklaring av saktemodus.
+#### Forklaring av saktemodus.
 
 For å skru på kan man bruke:
 
 - `saktemodus` og `saktemodus på`
   - gir 30 sekunders slowmode
 - `saktemodus <sek>` og `saktemodus på <sek>`
-  - gir slowmode på <sek> sekunder
+  - gir slowmode på `<sek>` sekunder
 
 For å skru av kan man bruke:
 

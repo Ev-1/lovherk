@@ -60,6 +60,25 @@ class Misc:
             servers += f"{server.name}\n"
         await ctx.send(servers)
 
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def howto(self, ctx, *, channel: str=None):
+        """
+        Info om LovherkBot
+        """
+        avatar = self.bot.user.avatar_url_as(format=None,
+                                             static_format='png',
+                                             size=1024)
+        howto = f'[Instruksjoner på Github]' \
+            + f'(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
+
+        embed = discord.Embed(color=0xD9C04D)
+        embed.set_author(name=self.bot.user.name, icon_url=avatar)
+        embed.set_thumbnail(url=avatar)
+        embed.add_field(name="Hvordan bruke lovherket",
+                        value=howto, inline=False)
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def info(self, ctx, *, channel: str=None):
         """
