@@ -327,7 +327,7 @@ class Rules:
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send('Sjekk at reglene finnes.\n' + 
+            await ctx.send('Sjekk at reglene finnes.\n' +
                            '**Liste over lovene i lovherket:**\n' +
                            f'{rules.get_rules_formatted()}')
             return
@@ -521,7 +521,7 @@ class Rules:
         """
         Fjerner en reaksjons-regler til en reaksjon på en melding lovherket.
         """
-        print("Start")
+
         rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
 
         msg = await self._get_linked_message(ctx, message_link)
@@ -540,6 +540,54 @@ class Rules:
     """
     Events
     """
+    # Call rules without using commands
+    async def on_message(self, message):
+
+        if message.author.id is self.bot.user.id:
+            return
+
+        if not isinstance(message.channel, discord.TextChannel):
+            return
+
+        content = message.content
+
+        if content is '' or content[0] is not "§":  # hardcoded atm
+            return
+
+        split = content.split('§')
+        num = split[1]
+
+        if num is '':
+            return
+
+        rules = RuleManager(message.guild.id, self.SERVERS_PATH)
+
+        lov = rules.get_settings("default_rule")
+        rule_text = rules.get_rule_text(lov)
+
+        context = message.channel
+
+        if rule_text is None:
+            await context.send('**Du må sette default før dette fungerer\n' +
+                               'Liste over lovene i lovherket:**\n' +
+                               f'{rules.get_rules_formatted()}')
+            return
+
+        if rule_text == "":
+            await context.send("Denne regelen er helt tom.")
+            return
+
+        # Get only specified rules
+        partial_rules = ""
+        for rule in num.split():
+            lovregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
+            m = re.search(lovregex, rule_text)
+            if m is not None:
+                partial_rules += m.groups()[0] + "\n"
+
+        if partial_rules is '':
+            return
+        await context.send(partial_rules)
 
     async def on_raw_reaction_add(self, payload):
         await self.react_action(payload, True)

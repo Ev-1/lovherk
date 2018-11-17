@@ -43,9 +43,9 @@ class Misc:
             return
         try:
             await ctx.message.delete()
-            message = f'Ser ut som om du/dere snakker om noe som kanskje' \
+            message = f'Ser ut som om du/dere snakker om noe som kanskje ' \
                 + f'passer bedre i {channel}. Vi hadde satt pris på '\
-                + f'om du/dere kunne flytte over til {channel} slik' \
+                + f'om du/dere kunne flytte over til {channel} slik ' \
                 + f'at sørveren blir mest mulig oversiktlig. Takk :)'
             await ctx.send(message)
 
