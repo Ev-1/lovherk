@@ -543,7 +543,7 @@ class Rules:
     # Call rules without using commands
     async def on_message(self, message):
 
-        if message.author.id is self.bot.user.id:
+        if message.author.id == self.bot.user.id:
             return
 
         if not isinstance(message.channel, discord.TextChannel):
@@ -558,6 +558,12 @@ class Rules:
         num = split[1]
 
         if num is '':
+            return
+
+        # crap way to avoid runnin when a command runs
+        try:
+            int(num.split()[0])
+        except:
             return
 
         rules = RuleManager(message.guild.id, self.SERVERS_PATH)
