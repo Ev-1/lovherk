@@ -188,16 +188,12 @@ class Rules:
 
         rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
 
-        default = True
-
         if isinstance(lov, int):
             if num is None:
                 num = str(lov)
             else:
                 num = str(lov) + " " + num
             lov = rules.get_settings("default_rule")
-        else:
-            default = False
 
         rule_text = rules.get_rule_text(lov)
 
@@ -223,7 +219,7 @@ class Rules:
             if partial_rules == "":
                 await ctx.send(f'Fant ikke reglene du ser etter')
             else:
-                if not default:
+                if lov != rules.get_settings("default_rule"):
                     partial_rules = f'**I reglene for {lov}:**\n' \
                         + partial_rules
                 await ctx.send(partial_rules)
