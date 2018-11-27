@@ -210,9 +210,12 @@ class Rules:
         if num is not None:
             await ctx.message.delete()
             partial_rules = ""
-            for rule in num.split():
-                lovregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
-                m = re.search(lovregex, rule_text)
+
+            no_dupes = remove_duplicates(num.split())
+
+            for rule in no_dupes:
+                ruleregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
+                m = re.search(ruleregex, rule_text)
                 if m is not None:
                     partial_rules += m.groups()[0] + "\n"
 
@@ -565,7 +568,7 @@ class Rules:
         if num is '':
             return
 
-        # crap way to avoid runnin when a command runs
+        # crap way to avoid running when a command runs
         try:
             int(num.split()[0])
         except:
@@ -590,9 +593,10 @@ class Rules:
 
         # Get only specified rules
         partial_rules = ""
-        for rule in num.split():
-            lovregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
-            m = re.search(lovregex, rule_text)
+        no_dupes = remove_duplicates(num.split())
+        for rule in no_dupes:
+            ruleregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
+            m = re.search(ruleregex, rule_text)
             if m is not None:
                 partial_rules += m.groups()[0] + "\n"
 
@@ -740,6 +744,15 @@ class Rules:
                 await asyncio.sleep(2)
                 await msg.edit(content=updated_text)
 
+
+def remove_duplicates(dupe_list): 
+    seen = {}
+    result = []
+    for item in dupe_list:
+        if item in seen: continue
+        seen[item] = 1
+        result.append(item)
+    return result
 
 def setup(bot):
     bot.add_cog(Rules(bot))
