@@ -35,9 +35,9 @@ class SlowMode:
         if enable.lower() == 'på':
             await ctx.channel.edit(slowmode_delay=seconds)
             if seconds == 1:
-                await ctx.send(SAKTEMODUS + f'{seconds} sekund.')
+                await ctx.send(self.SAKTEMODUS + f'{seconds} sekund.')
             else:
-                await ctx.send(SAKTEMODUS + f'{seconds} sekunder.')
+                await ctx.send(self.SAKTEMODUS + f'{seconds} sekunder.')
         if enable.lower() == 'av':
             await ctx.channel.edit(slowmode_delay=0)
             await ctx.send(f'Saktemodus er skrudd av.')
