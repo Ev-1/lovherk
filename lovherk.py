@@ -2,6 +2,7 @@ import json
 import os
 import codecs
 import discord
+import time
 
 from discord.ext import commands
 from cogs.utils.settings import Settings
@@ -30,15 +31,6 @@ class LovHerk(commands.Bot):
                 name = file[:-3]
                 self.load_extension(f"cogs.{name}")
 
-    async def on_ready(self):
-        print(f'\nLogged in as: {self.user.name}' +
-              f' in {len(self.guilds)} servers.')
-        print(f'Version: {discord.__version__}\n')
-
-        await self.change_presence(activity=discord.Game(type=0,
-                                   name=self.config["playing"]),
-                                   status=discord.Status.online)
-
     async def on_command_error(self, ctx, err):
         if (isinstance(err, commands.MissingRequiredArgument) or
                 isinstance(err, commands.BadArgument)):
@@ -63,6 +55,18 @@ class LovHerk(commands.Bot):
 
         elif isinstance(err, commands.CommandNotFound):
             pass
+
+    async def on_ready(self):
+        if not hasattr(self, 'uptime'):
+            self.uptime = time.time()
+
+        print(f'\nLogged in as: {self.user.name}' +
+              f' in {len(self.guilds)} servers.')
+        print(f'Version: {discord.__version__}\n')
+
+        await self.change_presence(activity=discord.Game(type=0,
+                                   name=self.config["playing"]),
+                                   status=discord.Status.online)
 
     def run(self):
         try:

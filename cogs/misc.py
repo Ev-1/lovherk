@@ -64,6 +64,16 @@ class Misc:
                 + f' | websocket: {int(self.bot.latency * 1000)}ms'
             await message.edit(content=edit)
 
+    @commands.command(name='uptime', hidden=True)
+    async def _uptime(self, ctx):
+        now = time.time()
+        diff = int(now - self.bot.uptime)
+        days, remainder = divmod(diff, 24 * 60 * 60)
+        hours, remainder = divmod(remainder, 60 * 60)
+        minutes, seconds = divmod(remainder, 60)
+        await ctx.send(f'{days}d {hours}h {minutes}m {seconds}s')
+
+
     @commands.command()
     @commands.is_owner()
     async def servers(self, ctx):
