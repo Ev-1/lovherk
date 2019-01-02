@@ -118,27 +118,6 @@ class Misc:
                          text="Laget av Even :)")
         await ctx.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.command()
-    async def julenavn(self, ctx):
-
-        xmas_emoji = ['🎄', '🦌', '🤶', '🎅', '🎁', '⛄']
-
-        old_nick = ctx.author.display_name
-
-        if (old_nick[0] in xmas_emoji or
-                old_nick[len(old_nick)-1] in xmas_emoji):
-            old_nick = old_nick[1:-1]
-
-        rand_emoji = random.choice(xmas_emoji)
-        new_nick = f'{rand_emoji}{old_nick}{rand_emoji}'
-
-        try:
-            await ctx.author.edit(nick=new_nick, reason="Julenavn")
-            await ctx.send(rand_emoji)
-        except discord.Forbidden:
-            await ctx.send("Hakke perms")
-
 
 def setup(bot):
     bot.add_cog(Misc(bot))
