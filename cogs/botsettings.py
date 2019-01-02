@@ -22,15 +22,15 @@ class BotSettings:
     async def _set_server_prefix(self, ctx, *prefixes):
         if prefixes == ():
             await ctx.send('Server prefixes are:' +
-                           f'{self.settings.get_guild_prefix(ctx.guild.id)}')
+                           f'{self.settings.get_prefix(ctx.guild.id)}')
             return
-        self.settings.set_guild_prefix(ctx.guild.id, prefixes)
+        self.settings.set_prefix(ctx.guild.id, prefixes)
         await ctx.send(f'Server prefixes set to {prefixes}')
 
     @commands.guild_only()
     @_set.command(name='resetprefix')
     async def _reset_prefix(self, ctx):
-        self.settings.set_guild_prefix(ctx.guild.id, None)
+        self.settings.set_prefix(ctx.guild.id, None)
         await ctx.send('Server prefixes reset do default:' +
                        f'{self.settings.default_prefix}')
 

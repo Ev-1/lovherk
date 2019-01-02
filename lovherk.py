@@ -4,39 +4,50 @@ import codecs
 import discord
 
 from discord.ext import commands
-from util.settings import Settings
+from cogs.utils.settings import Settings
 
 
-with codecs.open("config.json", 'r', encoding='utf8') as f:
-    data = json.load(f)
-    token = data["token"]
-    default_prefix = data["default_prefix"]
-    status = data["playing"]
-
-
-def get_prefix(bot, message):
+def _get_prefix(bot, message):
     if not message.guild:
         return default_prefix
-    prefixes = bot.settings.get_guild_prefix(message.guild.id)
+    prefixes = bot.settings.get_prefix(message.guild.id)
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
-bot = commands.Bot(command_prefix=get_prefix)
-bot.settings = Settings(default_prefix)
+class LovHerk(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix=_get_prefix)
 
-print("Logging in")
+        # This is kinda stupid
+        with codecs.open("config.json", 'r', encoding='utf8') as f:
+            self.config = json.load(f)
 
-for file in os.listdir("cogs"):
-    if file.endswith(".py"):
-        name = file[:-3]
-        bot.load_extension(f"cogs.{name}")
+        self.settings = Settings(self.config['default_prefix'])
+
+        # Load all cogs
+        for file in os.listdir("cogs"):
+            if file.endswith(".py"):
+                name = file[:-3]
+                self.load_extension(f"cogs.{name}")
+
+    async def on_ready(self):
+        print(f'\nLogged in as: {self.user.name}' +
+              f' in {len(self.guilds)} servers.')
+        print(f'Version: {discord.__version__}\n')
+        await self.change_presence(activity=discord.Game(type=0,
+                                   name=self.config["playing"]),
+                                   status=discord.Status.online)
+
+    def run(self):
+        try:
+            super().run(self.config["token"], reconnect=True)
+        except Exception as e:
+            print('ifkn', e)
 
 
-@bot.event
-async def on_ready():
-    print(f'\nLogged in as: {bot.user.name} in {len(bot.guilds)} servers.')
-    print(f'Version: {discord.__version__}\n')
-    await bot.change_presence(activity=discord.Game(type=0, name=status),
-                              status=discord.Status.online)
+def run_bot():
+    bot = LovHerk()
+    bot.run()
 
-bot.run(token, bot=True, reconnect=True)
+if __name__ == '__main__':
+    run_bot()

@@ -1,7 +1,7 @@
 import discord
 import os
 import asyncio
-
+import time
 import random
 
 from discord.ext import commands
@@ -54,6 +54,16 @@ class Misc:
         except discord.Forbidden:
             await ctx.send('Jeg trenger tillatelse til å slette meldinger')
 
+    @commands.command(name='ping', hidden=True)
+    async def _ping(self, ctx):
+            start = time.perf_counter()
+            message = await ctx.send('Ping...')
+            end = time.perf_counter()
+            duration = int((end - start) * 1000)
+            edit = f'Pong!\nPing: {duration}ms' \
+                + f' | websocket: {int(self.bot.latency * 1000)}ms'
+            await message.edit(content=edit)
+
     @commands.command()
     @commands.is_owner()
     async def servers(self, ctx):
@@ -66,7 +76,7 @@ class Misc:
     @commands.command()
     async def howto(self, ctx, *, channel: str=None):
         """
-        Info om LovherkBot
+        Hvordan bruke LovHerket
         """
         avatar = self.bot.user.avatar_url_as(format=None,
                                              static_format='png',
@@ -116,14 +126,15 @@ class Misc:
 
         old_nick = ctx.author.display_name
 
-        if old_nick[0] in xmas_emoji or old_nick[len(old_nick)-1] in xmas_emoji:
+        if (old_nick[0] in xmas_emoji or
+                old_nick[len(old_nick)-1] in xmas_emoji):
             old_nick = old_nick[1:-1]
 
         rand_emoji = random.choice(xmas_emoji)
         new_nick = f'{rand_emoji}{old_nick}{rand_emoji}'
 
         try:
-            await ctx.author.edit(nick=new_nick, reason = "Julenavn")
+            await ctx.author.edit(nick=new_nick, reason="Julenavn")
             await ctx.send(rand_emoji)
         except discord.Forbidden:
             await ctx.send("Hakke perms")
