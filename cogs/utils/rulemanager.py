@@ -1,7 +1,7 @@
 import os
 import codecs
 import json
-
+from datetime import datetime
 
 class RuleManager:
 
@@ -42,7 +42,8 @@ class RuleManager:
         self._server["rules"].append({
             "name": name,
             "rule_text": rule_text,
-            "alternate": alternaterule
+            "alternate": alternaterule,
+            "edited": str(datetime.utcnow())
         })
         self._save()
         return True
@@ -75,6 +76,7 @@ class RuleManager:
                 _rule["alternate"] = new_rule_text
             else:
                 _rule["rule_text"] = new_rule_text
+            _rule["edited"] = str(datetime.utcnow())
             self._save()
             return True
         return False
@@ -85,9 +87,9 @@ class RuleManager:
         _rule = self._get_rule(name)
         if _rule is not None:
             if alternate:
-                return _rule["alternate"]
+                return _rule["alternate"], _rule["edited"]
             else:
-                return _rule["rule_text"]
+                return _rule["rule_text"], _rule["edited"]
         return None
 
     def get_rules_formatted(self, alternate: bool=False):
