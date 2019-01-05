@@ -90,7 +90,7 @@ class RuleManager:
                 return _rule["alternate"], _rule["edited"]
             else:
                 return _rule["rule_text"], _rule["edited"]
-        return None
+        return None, None
 
     def get_rules_formatted(self, alternate: bool=False):
         rules = self._get_rule_names(alternate)
