@@ -3,6 +3,7 @@ import os
 import asyncio
 import time
 import random
+import platform
 
 from discord.ext import commands
 
@@ -120,6 +121,9 @@ class Misc(commands.Cog):
                         value=infotext, inline=False)
         embed.add_field(name="Hvorfor?",
                         value="Fordi Even ville lære seg å lage bot.",
+                        inline=True)
+        embed.add_field(name="Hvordan?",
+                        value=f"**Python:** [{platform.python_version()}](https://www.python.org/)\n**Discord.py:** [{discord.__version__}](https://github.com/Rapptz/discord.py)",
                         inline=True)
         embed.add_field(name="Kildekode",
                         value="[Github](https://github.com/Ev-1/lovherk).",
