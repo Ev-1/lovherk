@@ -405,6 +405,7 @@ class Rules(commands.Cog):
     Events
     """
     # Call rules without using commands
+    @commands.Cog.listener()
     async def on_message(self, message):
 
         if message.author.id == self.bot.user.id:
@@ -460,17 +461,20 @@ class Rules(commands.Cog):
             return
         await context.send(partial_rules)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         await self.react_action(payload, True)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         await self.react_action(payload, False)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_clear(self, payload):
         if payload.message_id not in self._react_messages:
             return
         channel = self.bot.get_channel(payload.channel_id)
-        msg = await channel.get_message(payload.message_id)
+        msg = await channel.fetch_message(payload.message_id)
         await asyncio.sleep(1)
         await msg.add_reaction(self.emoji)
 
@@ -485,12 +489,12 @@ class Rules(commands.Cog):
         if str(payload.emoji) == self.emoji:
             if not added and payload.user_id == self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 await msg.add_reaction(self.emoji)
 
             if added and payload.user_id != self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 user = self.bot.get_user(payload.user_id)
                 try:
                     await msg.remove_reaction(self.emoji, user)
@@ -501,7 +505,7 @@ class Rules(commands.Cog):
         else:
             if added and payload.user_id != self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 await msg.clear_reactions()
 
         if str(payload.emoji) == self.emoji:
