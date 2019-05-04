@@ -10,7 +10,7 @@ from cogs.utils.rulemanager import RuleManager
 from discord.ext import commands
 
 
-class Rules:
+class Rules(commands.Cog):
 
     DATA_PATH = 'data/rules/'
 #    EMOJI_PATH = DATA_PATH + 'react_emoji.json'
@@ -533,7 +533,7 @@ class Rules:
             return None
 
         try:
-            msg = await channel.get_message(message_id)
+            msg = await channel.fetch_message(message_id)
             return msg
         except:
             return None

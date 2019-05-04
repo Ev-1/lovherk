@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import BucketType
 
 
-class SlowMode:
+class SlowMode(commands.Cog):
     SAKTEMODUS = 'Kanalen er nå i saktemodus på '
 
     def __init__(self, bot):
@@ -29,8 +29,8 @@ class SlowMode:
         if seconds == 0:
             enable = 'av'
 
-        if seconds < 0 or seconds > 120:
-            await ctx.send("Saktemodus funker bare opptil 120 sekunder.")
+        if seconds < 0 or seconds > 21600:
+            await ctx.send("Saktemodus funker bare opptil 6 timer (21600 sekunder).")
             return
         if enable.lower() == 'på':
             await ctx.channel.edit(slowmode_delay=seconds)
