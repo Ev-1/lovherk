@@ -5,7 +5,7 @@ import codecs
 from discord.ext import commands
 
 
-class BotSettings:
+class BotSettings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.settings = self.bot.settings
@@ -42,5 +42,5 @@ class BotSettings:
         return formatted[:-2]
 
 
-def setup(bot):
-    bot.add_cog(BotSettings(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(BotSettings(bot))

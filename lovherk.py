@@ -5,6 +5,7 @@ import discord
 
 from discord.ext import commands
 from cogs.utils.settings import Settings
+from discord.flags import MemberCacheFlags
 
 
 def _get_prefix(bot, message):
@@ -16,7 +17,11 @@ def _get_prefix(bot, message):
 
 class LovHerk(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=_get_prefix)
+        intents = discord.Intents.all()
+        super().__init__(command_prefix=_get_prefix,
+                         intents=intents,
+                         member_cache_flags=MemberCacheFlags.from_intents(intents)
+                         )
 
         # This is kinda stupid, TODO: make not stupid
         with codecs.open("config.json", 'r', encoding='utf8') as f:
@@ -24,13 +29,13 @@ class LovHerk(commands.Bot):
 
         self.settings = Settings(self.config['default_prefix'])
 
+    async def on_ready(self):
         # Load all cogs
         for file in os.listdir("cogs"):
             if file.endswith(".py"):
                 name = file[:-3]
-                self.load_extension(f"cogs.{name}")
+                await self.load_extension(f"cogs.{name}")
 
-    async def on_ready(self):
         print(f'\nLogged in as: {self.user.name}' +
               f' in {len(self.guilds)} servers.')
         print(f'Version: {discord.__version__}\n')
