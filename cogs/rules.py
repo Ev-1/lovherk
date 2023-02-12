@@ -10,7 +10,7 @@ from cogs.utils.rulemanager import RuleManager
 from discord.ext import commands
 
 
-class Rules:
+class Rules(commands.Cog):
 
     DATA_PATH = 'data/rules/'
 #    EMOJI_PATH = DATA_PATH + 'react_emoji.json'
@@ -403,6 +403,7 @@ class Rules:
     Events
     """
     # Call rules without using commands
+    @commands.Cog.listener()
     async def on_message(self, message):
 
         if message.author.id == self.bot.user.id:
@@ -610,5 +611,5 @@ def remove_duplicates(dupe_list):
     return result
 
 
-def setup(bot):
-    bot.add_cog(Rules(bot))
+async def setup(bot):
+    await bot.add_cog(Rules(bot))

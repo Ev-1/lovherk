@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import BucketType
 
 
-class SlowMode:
+class SlowMode(commands.Cog):
     SAKTEMODUS = 'Kanalen er nå i saktemodus på '
 
     def __init__(self, bot):
@@ -63,5 +63,5 @@ class SlowMode:
             await ctx.send(f"Låst opp")
 
 
-def setup(bot):
-    bot.add_cog(SlowMode(bot))
+async def setup(bot):
+    await bot.add_cog(SlowMode(bot))
