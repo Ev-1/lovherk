@@ -2,6 +2,7 @@ import codecs
 import json
 import logging
 import os
+import time
 
 import discord
 from discord.ext import commands
@@ -33,6 +34,7 @@ class LovHerk(commands.Bot):
             self.config = json.load(f)
 
         self.settings = Settings(self.config['default_prefix'])
+        self.uptime = time.time()
 
     async def setup_hook(self):
         # Load all cogs once, before connecting. on_ready can fire multiple

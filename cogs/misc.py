@@ -61,6 +61,14 @@ class Misc(commands.Cog):
                 + f' | websocket: {int(self.bot.latency * 1000)}ms'
             await message.edit(content=edit)
 
+    @commands.command(name='uptime', hidden=True)
+    async def _uptime(self, ctx):
+        diff = int(time.time() - self.bot.uptime)
+        days, remainder = divmod(diff, 24 * 60 * 60)
+        hours, remainder = divmod(remainder, 60 * 60)
+        minutes, seconds = divmod(remainder, 60)
+        await ctx.send(f'{days}d {hours}h {minutes}m {seconds}s')
+
     @commands.command()
     @commands.is_owner()
     async def servers(self, ctx):
@@ -75,9 +83,7 @@ class Misc(commands.Cog):
         """
         Hvordan bruke LovHerket
         """
-        avatar = self.bot.user.avatar_url_as(format=None,
-                                             static_format='png',
-                                             size=1024)
+        avatar = self.bot.user.display_avatar.url
         howto = '[Instruksjoner på Github]' \
             + '(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
 
@@ -94,9 +100,7 @@ class Misc(commands.Cog):
         Info om LovherkBot
         """
 
-        avatar = self.bot.user.avatar_url_as(format=None,
-                                             static_format='png',
-                                             size=1024)
+        avatar = self.bot.user.display_avatar.url
         infotext = 'En bot som holder kontroll på reglene i' \
             + '/r/Norge sin [discordserver](https://discord.gg/UeP2tH6).'
 
