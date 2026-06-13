@@ -199,9 +199,9 @@ class Rules(commands.Cog):
             return
 
         msg = await ctx.send(rule_text)
-        added = rules.add_link_setting('auto_update',
-                                       lov,
-                                       f'{self._format_message_link(msg)}')
+        rules.add_link_setting('auto_update',
+                               lov,
+                               f'{self._format_message_link(msg)}')
 
         conf_msg = await ctx.send("Meldingen oppdateres nå automatisk")
         await asyncio.sleep(5)
@@ -373,7 +373,7 @@ class Rules(commands.Cog):
                 await asyncio.sleep(1)
                 await msg.add_reaction(self.emoji)
                 await ctx.send("reaksjonsregler lagt til")
-            except:
+            except Exception:
                 await ctx.send("Får ikke reacta")
         else:
             await ctx.send("Reglene du skrev inn finnes ikke")
@@ -414,19 +414,19 @@ class Rules(commands.Cog):
 
         content = message.content
 
-        if content is '' or content[0] is not "§":  # hardcoded atm
+        if content == '' or content[0] != "§":  # hardcoded atm
             return
 
         split = content.split('§')
         num = split[1]
 
-        if num is '':
+        if num == '':
             return
 
         # crap way to avoid running when a command runs
         try:
             int(num.split()[0])
-        except:
+        except Exception:
             return
 
         rules = RuleManager(message.guild.id, self.SERVERS_PATH)
@@ -455,21 +455,24 @@ class Rules(commands.Cog):
             if m is not None:
                 partial_rules += m.groups()[0] + "\n"
 
-        if partial_rules is '':
+        if partial_rules == '':
             return
         await context.send(partial_rules)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         await self.react_action(payload, True)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         await self.react_action(payload, False)
 
+    @commands.Cog.listener()
     async def on_raw_reaction_clear(self, payload):
         if payload.message_id not in self._react_messages:
             return
         channel = self.bot.get_channel(payload.channel_id)
-        msg = await channel.get_message(payload.message_id)
+        msg = await channel.fetch_message(payload.message_id)
         await asyncio.sleep(1)
         await msg.add_reaction(self.emoji)
 
@@ -484,27 +487,24 @@ class Rules(commands.Cog):
         if str(payload.emoji) == self.emoji:
             if not added and payload.user_id == self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 await msg.add_reaction(self.emoji)
 
             if added and payload.user_id != self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 user = self.bot.get_user(payload.user_id)
                 try:
                     await msg.remove_reaction(self.emoji, user)
-                except:
+                except Exception:
                     await channel.send("Tell a mod to fix my perms" +
                                        f"{user.mention}")
                 await self._dm_rules(user, msg)
         else:
             if added and payload.user_id != self.bot.user.id:
                 channel = self.bot.get_channel(payload.channel_id)
-                msg = await channel.get_message(payload.message_id)
+                msg = await channel.fetch_message(payload.message_id)
                 await msg.clear_reactions()
-
-        if str(payload.emoji) == self.emoji:
-            rules = RuleManager
 
     """
     Non commands functions
@@ -521,7 +521,7 @@ class Rules(commands.Cog):
             message_id = int(message_split[-1])
             channel_id = int(message_split[-2])
             guild_id = int(message_split[-3])
-        except:
+        except Exception:
             return None
 
         if ctx.guild.id != int(guild_id):
@@ -532,9 +532,9 @@ class Rules(commands.Cog):
             return None
 
         try:
-            msg = await channel.get_message(message_id)
+            msg = await channel.fetch_message(message_id)
             return msg
-        except:
+        except Exception:
             return None
 
     async def _remove_reactions(self, ctx, to_match):
@@ -545,7 +545,7 @@ class Rules(commands.Cog):
                 msg = await self._get_linked_message(ctx, rule["link"])
                 if msg is None:
                     await ctx.send('Får ikke fjernet reaksjonen fra ' +
-                                   f'følgende melding:\n{message["link"]}\n' +
+                                   f'følgende melding:\n{rule["link"]}\n' +
                                    'Sjekk om den er tilgjengelig for botten' +
                                    ' eller slett reaksjonen manuelt')
                     continue

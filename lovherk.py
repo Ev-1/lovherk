@@ -29,13 +29,15 @@ class LovHerk(commands.Bot):
 
         self.settings = Settings(self.config['default_prefix'])
 
-    async def on_ready(self):
-        # Load all cogs
+    async def setup_hook(self):
+        # Load all cogs once, before connecting. on_ready can fire multiple
+        # times (every reconnect), which would raise ExtensionAlreadyLoaded.
         for file in os.listdir("cogs"):
             if file.endswith(".py"):
                 name = file[:-3]
                 await self.load_extension(f"cogs.{name}")
 
+    async def on_ready(self):
         print(f'\nLogged in as: {self.user.name}' +
               f' in {len(self.guilds)} servers.')
         print(f'Version: {discord.__version__}\n')
