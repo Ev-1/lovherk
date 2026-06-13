@@ -29,7 +29,7 @@ class RuleManager:
         with open(self._path, encoding='utf8') as read_file:
             self._server = json.load(read_file)
 
-    def add_rule(self, name, rule_text, alternaterule: str=None):
+    def add_rule(self, name, rule_text, alternaterule: str | None = None):
         if name is not None:
             name = name.lower()
         if any(rule for rule in self._server["rules"] if rule["name"] == name):

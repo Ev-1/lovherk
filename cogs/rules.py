@@ -37,7 +37,8 @@ class Rules(commands.Cog):
     @commands.guild_only()
     @commands.command(name="lov")
     async def rules(self, ctx,
-                    lov: int | str=None, *, num: str=None):
+                    lov: int | str | None = None, *,
+                    num: str | None = None):
         """
         Se reglene i lovherket.
         """
@@ -88,7 +89,7 @@ class Rules(commands.Cog):
                              ctx.command.qualified_name)
 
     @_rule_settings.command(name="ny")
-    async def newrules(self, ctx, lov, *, newrule: str=None):
+    async def newrules(self, ctx, lov, *, newrule: str | None = None):
         """
         Legger til et nytt sett med regler i lovherket.
         """
@@ -344,7 +345,7 @@ class Rules(commands.Cog):
             await ctx.send("Reglene du skrev inn finnes ikke")
 
     @_react_settings.command(name="vis")
-    async def show_alternate(self, ctx, lov: str=None):
+    async def show_alternate(self, ctx, lov: str | None = None):
         """
         Viser reaksjons-regler fra lovherket.
         """

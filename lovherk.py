@@ -83,14 +83,6 @@ class LovHerk(commands.Bot):
         elif isinstance(err, commands.CommandNotFound):
             pass
 
-    def run(self):
-        # Disable discord.py's own logging setup; we configure the root
-        # logger ourselves in run_bot() so our logs share the same format.
-        try:
-            super().run(self.config["token"], reconnect=True, log_handler=None)
-        except Exception:
-            log.exception("Bot stopped with an unhandled exception")
-
 
 def run_bot():
     # Set LOG_LEVEL=DEBUG in the environment to get more verbose output.
@@ -98,7 +90,11 @@ def run_bot():
                     logging.INFO)
     discord.utils.setup_logging(level=level)
     bot = LovHerk()
-    bot.run()
+    # We configure the root logger above, so disable discord.py's own setup.
+    try:
+        bot.run(bot.config["token"], reconnect=True, log_handler=None)
+    except Exception:
+        log.exception("Bot stopped with an unhandled exception")
 
 if __name__ == '__main__':
     run_bot()

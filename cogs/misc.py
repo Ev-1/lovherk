@@ -10,7 +10,7 @@ class Misc(commands.Cog):
 
     @commands.has_permissions(manage_messages=True)
     @commands.group(invoke_without_command=True)
-    async def si(self, ctx, *, message: str=None):
+    async def si(self, ctx, *, message: str | None = None):
         """
         Får botten til å si det du sier.
         """
@@ -20,7 +20,7 @@ class Misc(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @si.command()
-    async def slett(self, ctx, *, message: str=None):
+    async def slett(self, ctx, *, message: str | None = None):
         """
         Får botten til å si det du sier og sletter den originale meldingen.
         """
@@ -34,7 +34,7 @@ class Misc(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.command()
-    async def kanal(self, ctx, *, channel: str=None):
+    async def kanal(self, ctx, *, channel: str | None = None):
         """
         Ber brukere gå til en annen kanal.
         """
@@ -79,7 +79,7 @@ class Misc(commands.Cog):
 
     @commands.has_permissions(manage_messages=True)
     @commands.command()
-    async def howto(self, ctx, *, channel: str=None):
+    async def howto(self, ctx, *, channel: str | None = None):
         """
         Hvordan bruke LovHerket
         """
@@ -95,7 +95,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def info(self, ctx, *, channel: str=None):
+    async def info(self, ctx, *, channel: str | None = None):
         """
         Info om LovherkBot
         """
