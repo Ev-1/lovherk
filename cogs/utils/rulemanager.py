@@ -1,4 +1,3 @@
-import codecs
 import json
 import os
 
@@ -20,14 +19,14 @@ class RuleManager:
         self._path = path + str(server_id) + '.json'
 
         if not os.path.isfile(self._path):
-            with codecs.open(self._path, "w+", encoding='utf8') as write_file:
+            with open(self._path, "w+", encoding='utf8') as write_file:
                 json.dump({
                             "id": int(server_id),
                             "rules": [],
                             "settings": self.SETTINGS_JSON
                         }, write_file, indent=4)
 
-        with codecs.open(self._path, "r", encoding='utf8') as read_file:
+        with open(self._path, encoding='utf8') as read_file:
             self._server = json.load(read_file)
 
     def add_rule(self, name, rule_text, alternaterule: str=None):
@@ -146,5 +145,5 @@ class RuleManager:
                      if rule["name"] == name), None)
 
     def _save(self):
-        with codecs.open(self._path, "w", encoding='utf8') as write_file:
+        with open(self._path, "w", encoding='utf8') as write_file:
             json.dump(self._server, write_file, indent=4)

@@ -1,4 +1,3 @@
-import codecs
 import json
 import logging
 import os
@@ -30,7 +29,7 @@ class LovHerk(commands.Bot):
                          )
 
         # This is kinda stupid, TODO: make not stupid
-        with codecs.open("config.json", 'r', encoding='utf8') as f:
+        with open("config.json", encoding='utf8') as f:
             self.config = json.load(f)
 
         self.settings = Settings(self.config['default_prefix'])

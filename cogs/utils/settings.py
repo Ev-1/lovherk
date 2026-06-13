@@ -1,4 +1,3 @@
-import codecs
 import json
 import os
 
@@ -13,10 +12,10 @@ class Settings:
             os.makedirs(self.DATA_PATH)
 
         if not os.path.isfile(self.SETTINGS_PATH):
-            with codecs.open(self.SETTINGS_PATH, "w+", encoding='utf8') as f:
+            with open(self.SETTINGS_PATH, "w+", encoding='utf8') as f:
                 json.dump({"prefixes": {}}, f, indent=4)
 
-        with codecs.open(self.SETTINGS_PATH, "r", encoding='utf8') as f:
+        with open(self.SETTINGS_PATH, encoding='utf8') as f:
             self.settings = json.load(f)
 
     def get_prefix(self, server_id):
@@ -31,5 +30,5 @@ class Settings:
             self.settings["prefixes"].pop(str(server_id), None)
         else:
             self.settings["prefixes"][str(server_id)] = prefixes
-        with codecs.open(self.SETTINGS_PATH, "w", encoding='utf8') as f:
+        with open(self.SETTINGS_PATH, "w", encoding='utf8') as f:
             json.dump(self.settings, f, indent=4)

@@ -1,5 +1,4 @@
 import asyncio
-import codecs
 import json
 import logging
 import os
@@ -26,11 +25,11 @@ class Rules(commands.Cog):
             os.makedirs(self.DATA_PATH)
 
         if not os.path.isfile(self.REACT_MSGS):
-            with codecs.open(self.REACT_MSGS, "w+", encoding='utf8') as f:
+            with open(self.REACT_MSGS, "w+", encoding='utf8') as f:
                 # "0"-id because empty lists makes json angry
                 json.dump([111111111111111111], f, indent=4)
 
-        with codecs.open(self.REACT_MSGS, "r", encoding='utf8') as f:
+        with open(self.REACT_MSGS, encoding='utf8') as f:
             self._react_messages = json.load(f)
 
         self.bot = bot
@@ -404,7 +403,7 @@ class Rules(commands.Cog):
                                        f'{self._format_message_link(msg)}')
 
         self._react_messages.append(msg.id)
-        with codecs.open(self.REACT_MSGS, "w+", encoding='utf8') as f:
+        with open(self.REACT_MSGS, "w+", encoding='utf8') as f:
             json.dump(self._react_messages, f, indent=4)
 
         if added == -1:
@@ -608,7 +607,7 @@ class Rules(commands.Cog):
                 await msg.remove_reaction(self.emoji, self.bot.user)
 
                 self._react_messages.remove(msg.id)
-                with codecs.open(self.REACT_MSGS, "w+", encoding='utf8') as f:
+                with open(self.REACT_MSGS, "w+", encoding='utf8') as f:
                     json.dump(self._react_messages, f, indent=4)
 
                 await asyncio.sleep(2)
