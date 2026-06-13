@@ -10,8 +10,9 @@ from discord.flags import MemberCacheFlags
 
 def _get_prefix(bot, message):
     if not message.guild:
-        return default_prefix
-    prefixes = bot.settings.get_prefix(message.guild.id)
+        prefixes = bot.settings.default_prefix
+    else:
+        prefixes = bot.settings.get_prefix(message.guild.id)
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
