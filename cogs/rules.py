@@ -26,8 +26,7 @@ class Rules(commands.Cog):
 
         if not os.path.isfile(self.REACT_MSGS):
             with open(self.REACT_MSGS, "w+", encoding='utf8') as f:
-                # "0"-id because empty lists makes json angry
-                json.dump([111111111111111111], f, indent=4)
+                json.dump([], f, indent=4)
 
         with open(self.REACT_MSGS, encoding='utf8') as f:
             self._react_messages = json.load(f)
@@ -43,7 +42,7 @@ class Rules(commands.Cog):
         Se reglene i lovherket.
         """
 
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
 
         if isinstance(lov, int):
             if num is None:
@@ -55,8 +54,7 @@ class Rules(commands.Cog):
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send('**Liste over lovene i lovherket:**\n' +
-                           f'{rules.get_rules_formatted()}')
+            await ctx.send(self._rules_list(rules))
             return
 
         if rule_text == "":
@@ -94,7 +92,7 @@ class Rules(commands.Cog):
         """
         Legger til et nytt sett med regler i lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         added = rules.add_rule(lov, newrule)
 
         if not added:
@@ -107,7 +105,7 @@ class Rules(commands.Cog):
         """
         Sender reglene så de enkelt kan kopieres med formatering.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
@@ -120,7 +118,7 @@ class Rules(commands.Cog):
         """
         Fjerner regler fra lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         await self._remove_reactions(ctx, lov)
         removed = rules.remove_rule(lov)
 
@@ -134,7 +132,7 @@ class Rules(commands.Cog):
         """
         Oppdaterer lover i lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         edited = rules.edit_rule(lov, newrule)
         if edited:
             await ctx.send("Oppdaterer meldinger")
@@ -148,13 +146,12 @@ class Rules(commands.Cog):
         """
         Setter default regler.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send('Den regelen er ikke i lovherket.\n\n' +
-                            '**Liste over lovene i lovherket:**\n' +
-                            f'{rules.get_rules_formatted()}')
+            await ctx.send('Den regelen er ikke i lovherket.\n\n'
+                           + self._rules_list(rules))
             return
 
         rules.change_setting("default_rule", lov.lower())
@@ -180,13 +177,12 @@ class Rules(commands.Cog):
         """
         Sender en melding som automatisk oppdateres når reglene oppdateres.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send('Sjekk at reglene finnes.\n' +
-                           '**Liste over lovene i lovherket:**\n' +
-                           f'{rules.get_rules_formatted()}')
+            await ctx.send('Sjekk at reglene finnes.\n'
+                           + self._rules_list(rules))
             return
 
         if rule_text == "":
@@ -215,7 +211,7 @@ class Rules(commands.Cog):
             await ctx.send("Sjekk at meldingen tilhører botten")
             return
 
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         added = rules.add_link_setting('auto_update',
                                        lov,
                                        f'{self._format_message_link(msg)}')
@@ -236,7 +232,7 @@ class Rules(commands.Cog):
         """
         Gir en liste over meldinger som er satt til å oppdateres automatisk.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         auto_update_messages = rules.get_settings('auto_update')
 
         list_message = '**Meldinger satt til autooppdatering:**\n'
@@ -255,7 +251,7 @@ class Rules(commands.Cog):
         """
         Fjerner en melding fra lista av meldinger som oppdateres automatisk.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         removed = rules.remove_link_setting("auto_update", "link", link)
         if removed:
             await ctx.send("autooppdatering fjernet")
@@ -289,7 +285,7 @@ class Rules(commands.Cog):
             await ctx.send("Sjekk at meldingen tilhører botten")
             return
 
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         canonical = self._format_message_link(msg)
         entry = next((m for m in rules.get_settings('auto_update')
                       if m["link"] == canonical), None)
@@ -328,7 +324,7 @@ class Rules(commands.Cog):
         """
         Oppdaterer reaksjons-regler i lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         edited = rules.edit_rule(lov, newrule, alternate=True)
         if edited:
             await ctx.send("Alternative regler oppdatert")
@@ -340,7 +336,7 @@ class Rules(commands.Cog):
         """
         Fjerner reaksjons-regler fra lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         removed = rules.remove_rule(lov, alternate=True)
         if removed:
             await ctx.send("Alternative regler fjernet")
@@ -352,7 +348,7 @@ class Rules(commands.Cog):
         """
         Viser reaksjons-regler fra lovherket.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         rule_text = rules.get_rule_text(lov, alternate=True)
         if rule_text is not None:
             await ctx.send("```\n" + rule_text + "\n```")
@@ -365,7 +361,7 @@ class Rules(commands.Cog):
         """
         Gir en liste over meldinger som er satt til å oppdateres automatisk.
         """
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         react_messages = rules.get_settings('react_rules')
 
         list_message = '**Meldinger med react-regler:**\n'
@@ -389,7 +385,7 @@ class Rules(commands.Cog):
             await ctx.send("Klarte ikke finne meldingen")
             return
 
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         added = rules.add_link_setting('react_rules',
                                        lov,
                                        f'{self._format_message_link(msg)}')
@@ -417,7 +413,7 @@ class Rules(commands.Cog):
         Fjerner en reaksjons-regler til en reaksjon på en melding lovherket.
         """
 
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
 
         msg = await self._get_linked_message(ctx, message_link)
         if msg is None:
@@ -462,7 +458,7 @@ class Rules(commands.Cog):
         except Exception:
             return
 
-        rules = RuleManager(message.guild.id, self.SERVERS_PATH)
+        rules = self._rules(message.guild.id)
 
         lov = rules.get_settings("default_rule")
         rule_text = rules.get_rule_text(lov)
@@ -537,6 +533,13 @@ class Rules(commands.Cog):
     Non commands functions
     """
 
+    def _rules(self, guild_id):
+        return RuleManager(guild_id, self.SERVERS_PATH)
+
+    def _rules_list(self, rules):
+        return ('**Liste over lovene i lovherket:**\n'
+                + rules.get_rules_formatted())
+
     def _create_embed(self, text):
         embed = discord.Embed(color=0xD9C04D, description=text)
         embed.set_author(name=self.bot.user.name,
@@ -545,7 +548,7 @@ class Rules(commands.Cog):
         embed.timestamp = datetime.now()
         return embed
 
-    def _format_message_link(sef, msg):
+    def _format_message_link(self, msg):
         message_link = 'https://discordapp.com/channels/' \
             + f'{msg.guild.id}/{msg.channel.id}/{msg.id}'
         return message_link
@@ -578,7 +581,7 @@ class Rules(commands.Cog):
             return None
 
     async def _remove_reactions(self, ctx, to_match):
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         react_rules = rules.get_settings("react_rules")
         for rule in react_rules:
             if rule["name"] == to_match or rule["link"] == to_match:
@@ -600,7 +603,7 @@ class Rules(commands.Cog):
 
     async def _dm_rules(self, user, msg):
 
-        rules = RuleManager(msg.guild.id, self.SERVERS_PATH)
+        rules = self._rules(msg.guild.id)
         react_rules = rules.get_settings("react_rules")
         msg_link = self._format_message_link(msg)
         rule_name = None
@@ -618,7 +621,7 @@ class Rules(commands.Cog):
             await msg.channel.send(f"I can't send you messages {user.mention}")
 
     async def _update_messages(self, ctx, name=None):
-        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        rules = self._rules(ctx.guild.id)
         auto_update_messages = rules.get_settings('auto_update')
 
         log.info("Updating %d auto-update message(s) for guild %s (name=%s)",
