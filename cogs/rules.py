@@ -280,6 +280,44 @@ class Rules(commands.Cog):
         await self._update_messages(ctx)
         await ctx.send("Oppdatert")
 
+    @_auto_settings.command(name="format")
+    async def format_auto(self, ctx, link, form: str):
+        """
+        Endrer en autooppdatert melding mellom `embed` og `text`.
+        """
+        form = form.lower()
+        if form not in ("embed", "text"):
+            await ctx.send("Velg `embed` eller `text`.")
+            return
+
+        msg = await self._get_linked_message(ctx, link)
+        if msg is None:
+            await ctx.send("Klarte ikke finne meldingen")
+            return
+        if msg.author != self.bot.user:
+            await ctx.send("Sjekk at meldingen tilhører botten")
+            return
+
+        rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
+        canonical = self._format_message_link(msg)
+        entry = next((m for m in rules.get_settings('auto_update')
+                      if m["link"] == canonical), None)
+        if entry is None:
+            await ctx.send("Meldingen er ikke satt til autooppdatering")
+            return
+
+        rule_text = rules.get_rule_text(entry["name"])
+        if rule_text is None:
+            await ctx.send("Fant ikke reglene for denne meldingen")
+            return
+
+        if form == "embed":
+            await msg.edit(content=None, embed=self._create_embed(rule_text))
+        else:
+            await msg.edit(content=rule_text, embed=None)
+        log.info("Reformatted auto-update message %s as %s", canonical, form)
+        await ctx.send(f"Meldingen er nå formatert som {form}")
+
     """
     React rules
     """
