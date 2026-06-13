@@ -47,13 +47,13 @@ class SlowMode(commands.Cog):
                         enable: str="på"):
         if enable == "på":
             for channel in ctx.guild.text_channels:
-                if ctx.guild.me.permissions_in(channel).manage_channels:
+                if channel.permissions_for(ctx.guild.me).manage_channels:
                     if channel.slowmode_delay == 0:
                         await channel.edit(slowmode_delay=120)
             await ctx.send("Låst")
         else:
             for channel in ctx.guild.text_channels:
-                if ctx.guild.me.permissions_in(channel).manage_messages:
+                if channel.permissions_for(ctx.guild.me).manage_channels:
                     if channel.slowmode_delay == 120:
                         await channel.edit(slowmode_delay=0)
             await ctx.send("Låst opp")
