@@ -1,11 +1,12 @@
+import codecs
 import json
 import os
-import codecs
-import discord
 
+import discord
 from discord.ext import commands
-from cogs.utils.settings import Settings
 from discord.flags import MemberCacheFlags
+
+from cogs.utils.settings import Settings
 
 
 def _get_prefix(bot, message):

@@ -1,6 +1,6 @@
-import os
-import json
 import codecs
+import json
+import os
 
 
 class Settings:

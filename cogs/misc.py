@@ -1,9 +1,6 @@
-import discord
-import os
-import asyncio
 import time
-import random
 
+import discord
 from discord.ext import commands
 
 
@@ -45,10 +42,10 @@ class Misc(commands.Cog):
             return
         try:
             await ctx.message.delete()
-            message = f'Ser ut som om du/dere snakker om noe som kanskje ' \
+            message = 'Ser ut som om du/dere snakker om noe som kanskje ' \
                 + f'passer bedre i {channel}. Vi hadde satt pris på '\
                 + f'om du/dere kunne flytte over til {channel} slik ' \
-                + f'at sørveren blir mest mulig oversiktlig. Takk :)'
+                + 'at sørveren blir mest mulig oversiktlig. Takk :)'
             await ctx.send(message)
 
         except discord.Forbidden:
@@ -81,8 +78,8 @@ class Misc(commands.Cog):
         avatar = self.bot.user.avatar_url_as(format=None,
                                              static_format='png',
                                              size=1024)
-        howto = f'[Instruksjoner på Github]' \
-            + f'(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
+        howto = '[Instruksjoner på Github]' \
+            + '(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
 
         embed = discord.Embed(color=0xD9C04D)
         embed.set_author(name=self.bot.user.name, icon_url=avatar)
@@ -100,8 +97,8 @@ class Misc(commands.Cog):
         avatar = self.bot.user.avatar_url_as(format=None,
                                              static_format='png',
                                              size=1024)
-        infotext = f'En bot som holder kontroll på reglene i' \
-            + f'/r/Norge sin [discordserver](https://discord.gg/UeP2tH6).'
+        infotext = 'En bot som holder kontroll på reglene i' \
+            + '/r/Norge sin [discordserver](https://discord.gg/UeP2tH6).'
 
         embed = discord.Embed(color=0xD9C04D)
         embed.set_author(name=self.bot.user.name, icon_url=avatar)

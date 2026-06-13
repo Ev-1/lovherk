@@ -1,13 +1,13 @@
-import discord
-import re
 import asyncio
-import typing
-import os
 import codecs
 import json
+import os
+import re
+
+import discord
+from discord.ext import commands
 
 from cogs.utils.rulemanager import RuleManager
-from discord.ext import commands
 
 
 class Rules(commands.Cog):
@@ -35,7 +35,7 @@ class Rules(commands.Cog):
     @commands.guild_only()
     @commands.command(name="lov")
     async def rules(self, ctx,
-                    lov: typing.Union[int, str]=None, *, num: str=None):
+                    lov: int | str=None, *, num: str=None):
         """
         Se reglene i lovherket.
         """
@@ -74,7 +74,7 @@ class Rules(commands.Cog):
                     partial_rules += m.groups()[0] + "\n"
 
             if partial_rules == "":
-                await ctx.send(f'Fant ikke reglene du ser etter')
+                await ctx.send('Fant ikke reglene du ser etter')
             else:
                 if lov != rules.get_settings("default_rule"):
                     partial_rules = f'**I reglene for {lov}:**\n' \
@@ -157,7 +157,7 @@ class Rules(commands.Cog):
         rule_text = rules.get_rule_text(lov)
 
         if rule_text is None:
-            await ctx.send(f'Den regelen er ikke i lovherket.\n\n' +
+            await ctx.send('Den regelen er ikke i lovherket.\n\n' +
                             '**Liste over lovene i lovherket:**\n' +
                             f'{rules.get_rules_formatted()}')
             return
@@ -511,7 +511,7 @@ class Rules(commands.Cog):
     """
 
     def _format_message_link(sef, msg):
-        message_link = f'https://discordapp.com/channels/' \
+        message_link = 'https://discordapp.com/channels/' \
             + f'{msg.guild.id}/{msg.channel.id}/{msg.id}'
         return message_link
 

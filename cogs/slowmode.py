@@ -1,7 +1,3 @@
-import discord
-import os
-import asyncio
-import typing
 
 from discord.ext import commands
 from discord.ext.commands import BucketType
@@ -19,7 +15,7 @@ class SlowMode(commands.Cog):
     @commands.command(name="saktemodus")
     async def _slowmode(self,
                         ctx,
-                        enable: typing.Union[int, str]="på",
+                        enable: int | str="på",
                         seconds: int=30):
 
         if isinstance(enable, int):
@@ -40,7 +36,7 @@ class SlowMode(commands.Cog):
                 await ctx.send(self.SAKTEMODUS + f'{seconds} sekunder.')
         if enable.lower() == 'av':
             await ctx.channel.edit(slowmode_delay=0)
-            await ctx.send(f'Saktemodus er skrudd av.')
+            await ctx.send('Saktemodus er skrudd av.')
 
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
@@ -54,13 +50,13 @@ class SlowMode(commands.Cog):
                 if ctx.guild.me.permissions_in(channel).manage_channels:
                     if channel.slowmode_delay == 0:
                         await channel.edit(slowmode_delay=120)
-            await ctx.send(f"Låst")
+            await ctx.send("Låst")
         else:
             for channel in ctx.guild.text_channels:
                 if ctx.guild.me.permissions_in(channel).manage_messages:
                     if channel.slowmode_delay == 120:
                         await channel.edit(slowmode_delay=0)
-            await ctx.send(f"Låst opp")
+            await ctx.send("Låst opp")
 
 
 async def setup(bot):
