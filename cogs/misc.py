@@ -1,9 +1,6 @@
-import discord
-import os
-import asyncio
 import time
-import random
 
+import discord
 from discord.ext import commands
 
 
@@ -13,7 +10,7 @@ class Misc(commands.Cog):
 
     @commands.has_permissions(manage_messages=True)
     @commands.group(invoke_without_command=True)
-    async def si(self, ctx, *, message: str=None):
+    async def si(self, ctx, *, message: str | None = None):
         """
         Får botten til å si det du sier.
         """
@@ -23,7 +20,7 @@ class Misc(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @si.command()
-    async def slett(self, ctx, *, message: str=None):
+    async def slett(self, ctx, *, message: str | None = None):
         """
         Får botten til å si det du sier og sletter den originale meldingen.
         """
@@ -37,7 +34,7 @@ class Misc(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.command()
-    async def kanal(self, ctx, *, channel: str=None):
+    async def kanal(self, ctx, *, channel: str | None = None):
         """
         Ber brukere gå til en annen kanal.
         """
@@ -45,10 +42,10 @@ class Misc(commands.Cog):
             return
         try:
             await ctx.message.delete()
-            message = f'Ser ut som om du/dere snakker om noe som kanskje ' \
+            message = 'Ser ut som om du/dere snakker om noe som kanskje ' \
                 + f'passer bedre i {channel}. Vi hadde satt pris på '\
                 + f'om du/dere kunne flytte over til {channel} slik ' \
-                + f'at sørveren blir mest mulig oversiktlig. Takk :)'
+                + 'at sørveren blir mest mulig oversiktlig. Takk :)'
             await ctx.send(message)
 
         except discord.Forbidden:
@@ -64,6 +61,14 @@ class Misc(commands.Cog):
                 + f' | websocket: {int(self.bot.latency * 1000)}ms'
             await message.edit(content=edit)
 
+    @commands.command(name='uptime', hidden=True)
+    async def _uptime(self, ctx):
+        diff = int(time.time() - self.bot.uptime)
+        days, remainder = divmod(diff, 24 * 60 * 60)
+        hours, remainder = divmod(remainder, 60 * 60)
+        minutes, seconds = divmod(remainder, 60)
+        await ctx.send(f'{days}d {hours}h {minutes}m {seconds}s')
+
     @commands.command()
     @commands.is_owner()
     async def servers(self, ctx):
@@ -74,15 +79,13 @@ class Misc(commands.Cog):
 
     @commands.has_permissions(manage_messages=True)
     @commands.command()
-    async def howto(self, ctx, *, channel: str=None):
+    async def howto(self, ctx, *, channel: str | None = None):
         """
         Hvordan bruke LovHerket
         """
-        avatar = self.bot.user.avatar_url_as(format=None,
-                                             static_format='png',
-                                             size=1024)
-        howto = f'[Instruksjoner på Github]' \
-            + f'(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
+        avatar = self.bot.user.display_avatar.url
+        howto = '[Instruksjoner på Github]' \
+            + '(https://github.com/Ev-1/lovherk/blob/master/HOWTO.md).'
 
         embed = discord.Embed(color=0xD9C04D)
         embed.set_author(name=self.bot.user.name, icon_url=avatar)
@@ -92,16 +95,14 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def info(self, ctx, *, channel: str=None):
+    async def info(self, ctx, *, channel: str | None = None):
         """
         Info om LovherkBot
         """
 
-        avatar = self.bot.user.avatar_url_as(format=None,
-                                             static_format='png',
-                                             size=1024)
-        infotext = f'En bot som holder kontroll på reglene i' \
-            + f'/r/Norge sin [discordserver](https://discord.gg/UeP2tH6).'
+        avatar = self.bot.user.display_avatar.url
+        infotext = 'En bot som holder kontroll på reglene i' \
+            + '/r/Norge sin [discordserver](https://discord.gg/UeP2tH6).'
 
         embed = discord.Embed(color=0xD9C04D)
         embed.set_author(name=self.bot.user.name, icon_url=avatar)

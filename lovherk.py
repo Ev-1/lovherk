@@ -1,17 +1,22 @@
 import json
+import logging
 import os
-import codecs
-import discord
+import time
 
+import discord
 from discord.ext import commands
-from cogs.utils.settings import Settings
 from discord.flags import MemberCacheFlags
+
+from cogs.utils.settings import Settings
+
+log = logging.getLogger("lovherk")
 
 
 def _get_prefix(bot, message):
     if not message.guild:
-        return default_prefix
-    prefixes = bot.settings.get_prefix(message.guild.id)
+        prefixes = bot.settings.default_prefix
+    else:
+        prefixes = bot.settings.get_prefix(message.guild.id)
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
@@ -24,21 +29,27 @@ class LovHerk(commands.Bot):
                          )
 
         # This is kinda stupid, TODO: make not stupid
-        with codecs.open("config.json", 'r', encoding='utf8') as f:
+        with open("config.json", encoding='utf8') as f:
             self.config = json.load(f)
 
         self.settings = Settings(self.config['default_prefix'])
+        self.uptime = time.time()
 
-    async def on_ready(self):
-        # Load all cogs
+    async def setup_hook(self):
+        # Load all cogs once, before connecting. on_ready can fire multiple
+        # times (every reconnect), which would raise ExtensionAlreadyLoaded.
         for file in os.listdir("cogs"):
             if file.endswith(".py"):
                 name = file[:-3]
-                await self.load_extension(f"cogs.{name}")
+                try:
+                    await self.load_extension(f"cogs.{name}")
+                    log.info("Loaded cog: %s", name)
+                except Exception:
+                    log.exception("Failed to load cog: %s", name)
 
-        print(f'\nLogged in as: {self.user.name}' +
-              f' in {len(self.guilds)} servers.')
-        print(f'Version: {discord.__version__}\n')
+    async def on_ready(self):
+        log.info("Logged in as %s in %d servers (discord.py %s)",
+                 self.user, len(self.guilds), discord.__version__)
 
         await self.change_presence(activity=discord.Game(type=0,
                                    name=self.config["playing"]),
@@ -58,7 +69,10 @@ class LovHerk(commands.Bot):
                 await ctx.send(message)
 
         if isinstance(err, commands.CommandInvokeError):
-            pass
+            # The actual error is wrapped in err.original. Log it with a
+            # traceback so command failures are debuggable instead of silent.
+            log.error("Error invoking command %s",
+                      ctx.command, exc_info=err.original)
 
         elif isinstance(err, commands.NoPrivateMessage):
             await ctx.send("Denne kommandoen er ikke tilgjengelig i DMs")
@@ -69,16 +83,18 @@ class LovHerk(commands.Bot):
         elif isinstance(err, commands.CommandNotFound):
             pass
 
-    def run(self):
-        try:
-            super().run(self.config["token"], reconnect=True)
-        except Exception as e:
-            print('ifkn', e)
-
 
 def run_bot():
+    # Set LOG_LEVEL=DEBUG in the environment to get more verbose output.
+    level = getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(),
+                    logging.INFO)
+    discord.utils.setup_logging(level=level)
     bot = LovHerk()
-    bot.run()
+    # We configure the root logger above, so disable discord.py's own setup.
+    try:
+        bot.run(bot.config["token"], reconnect=True, log_handler=None)
+    except Exception:
+        log.exception("Bot stopped with an unhandled exception")
 
 if __name__ == '__main__':
     run_bot()

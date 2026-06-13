@@ -86,7 +86,10 @@ Bruk `§autoset` kommandoen for å styre hvilke meldinger som skal oppdateres au
   - Får Lovherket til å forsøke å oppdatere alle meldingene som har blitt satt til oppdatering.
 
 - `autoset post <lov>`
-  - Får lovherket til å sende en melding med reglene i `<lov>` som automatisk blir satt til å oppdateres.
+  - Får lovherket til å sende en melding med reglene i `<lov>` som automatisk blir satt til å oppdateres. Nye meldinger sendes som embed.
+
+- `autoset format <link> <embed|text>`
+  - Endrer en melding som allerede oppdateres automatisk mellom embed og vanlig tekst. `embed` viser reglene i en embed-boks, `text` viser dem som vanlig tekst. Nyttig for å rydde i eldre meldinger som har drevet ut av synk.
 
 
 
@@ -122,6 +125,9 @@ Siden disse reglene skal være andre versjoner av de vanlige er de heller ikke t
 
 - `kanal #kanal`
   - Ber brukere gå til #kanal.
+
+- `uptime`
+  - Viser hvor lenge botten har vært oppe.
 
 - `lockdown [enable=på]`
   - gjør at alle kanaler får 2 minutters slowmode. Å skrive ingenting eller på skrur på lockdown. Alle andre argumenter skrur av. I tilfelle det blir masse spam.

@@ -1,7 +1,3 @@
-import discord
-import os
-import json
-import codecs
 from discord.ext import commands
 
 
