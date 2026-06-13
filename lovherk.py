@@ -1,5 +1,6 @@
 import codecs
 import json
+import logging
 import os
 
 import discord
@@ -7,6 +8,8 @@ from discord.ext import commands
 from discord.flags import MemberCacheFlags
 
 from cogs.utils.settings import Settings
+
+log = logging.getLogger("lovherk")
 
 
 def _get_prefix(bot, message):
@@ -37,12 +40,15 @@ class LovHerk(commands.Bot):
         for file in os.listdir("cogs"):
             if file.endswith(".py"):
                 name = file[:-3]
-                await self.load_extension(f"cogs.{name}")
+                try:
+                    await self.load_extension(f"cogs.{name}")
+                    log.info("Loaded cog: %s", name)
+                except Exception:
+                    log.exception("Failed to load cog: %s", name)
 
     async def on_ready(self):
-        print(f'\nLogged in as: {self.user.name}' +
-              f' in {len(self.guilds)} servers.')
-        print(f'Version: {discord.__version__}\n')
+        log.info("Logged in as %s in %d servers (discord.py %s)",
+                 self.user, len(self.guilds), discord.__version__)
 
         await self.change_presence(activity=discord.Game(type=0,
                                    name=self.config["playing"]),
@@ -62,7 +68,10 @@ class LovHerk(commands.Bot):
                 await ctx.send(message)
 
         if isinstance(err, commands.CommandInvokeError):
-            pass
+            # The actual error is wrapped in err.original. Log it with a
+            # traceback so command failures are debuggable instead of silent.
+            log.error("Error invoking command %s",
+                      ctx.command, exc_info=err.original)
 
         elif isinstance(err, commands.NoPrivateMessage):
             await ctx.send("Denne kommandoen er ikke tilgjengelig i DMs")
@@ -74,13 +83,19 @@ class LovHerk(commands.Bot):
             pass
 
     def run(self):
+        # Disable discord.py's own logging setup; we configure the root
+        # logger ourselves in run_bot() so our logs share the same format.
         try:
-            super().run(self.config["token"], reconnect=True)
-        except Exception as e:
-            print('ifkn', e)
+            super().run(self.config["token"], reconnect=True, log_handler=None)
+        except Exception:
+            log.exception("Bot stopped with an unhandled exception")
 
 
 def run_bot():
+    # Set LOG_LEVEL=DEBUG in the environment to get more verbose output.
+    level = getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(),
+                    logging.INFO)
+    discord.utils.setup_logging(level=level)
     bot = LovHerk()
     bot.run()
 

@@ -1,6 +1,7 @@
 import asyncio
 import codecs
 import json
+import logging
 import os
 import re
 
@@ -8,6 +9,8 @@ import discord
 from discord.ext import commands
 
 from cogs.utils.rulemanager import RuleManager
+
+log = logging.getLogger(__name__)
 
 
 class Rules(commands.Cog):
@@ -522,6 +525,7 @@ class Rules(commands.Cog):
             channel_id = int(message_split[-2])
             guild_id = int(message_split[-3])
         except Exception:
+            log.warning("Could not parse message link: %r", message_link)
             return None
 
         if ctx.guild.id != int(guild_id):
@@ -529,12 +533,16 @@ class Rules(commands.Cog):
 
         channel = ctx.guild.get_channel(channel_id)
         if channel is None:
+            log.warning("Channel %s not found for link %r",
+                        channel_id, message_link)
             return None
 
         try:
             msg = await channel.fetch_message(message_id)
             return msg
-        except Exception:
+        except discord.HTTPException:
+            log.warning("Could not fetch message %s in channel %s",
+                        message_id, channel_id, exc_info=True)
             return None
 
     async def _remove_reactions(self, ctx, to_match):
@@ -581,10 +589,15 @@ class Rules(commands.Cog):
         rules = RuleManager(ctx.guild.id, self.SERVERS_PATH)
         auto_update_messages = rules.get_settings('auto_update')
 
+        log.info("Updating %d auto-update message(s) for guild %s (name=%s)",
+                 len(auto_update_messages), ctx.guild.id, name)
+
         for message in auto_update_messages:
             if message["name"] == name or name is None:
                 msg = await self._get_linked_message(ctx, message["link"])
                 if msg is None:
+                    log.warning("Skipping auto-update, message not found: %s",
+                                message["link"])
                     await ctx.send('Klarer ikke finne følgende melding:\n' +
                                    f'{message["link"]}\nSjekk om den finnes,' +
                                    ' hvis ikke fjern den med `§auto fjern`')
@@ -592,12 +605,15 @@ class Rules(commands.Cog):
 
                 updated_text = rules.get_rule_text(message["name"])
                 if updated_text is None:
+                    log.warning("Skipping auto-update, rule not found: %s",
+                                message["name"])
                     await ctx.send('Fant ikke en regel med følgende navn:\n' +
                                    f'{message["name"]}.')
                     continue
 
                 await asyncio.sleep(2)
                 await msg.edit(content=updated_text)
+                log.info("Updated auto-update message: %s", message["link"])
 
 
 def remove_duplicates(dupe_list):
