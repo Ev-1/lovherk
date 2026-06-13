@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -201,7 +202,7 @@ class Rules(commands.Cog):
             await ctx.send("Den regelen er helt tom.")
             return
 
-        msg = await ctx.send(rule_text)
+        msg = await ctx.send(embed=self._create_embed(rule_text))
         rules.add_link_setting('auto_update',
                                lov,
                                f'{self._format_message_link(msg)}')
@@ -513,6 +514,14 @@ class Rules(commands.Cog):
     Non commands functions
     """
 
+    def _create_embed(self, text):
+        embed = discord.Embed(color=0xD9C04D, description=text)
+        embed.set_author(name=self.bot.user.name,
+                         icon_url=self.bot.user.display_avatar.url)
+        embed.set_footer(text='Sist oppdatert')
+        embed.timestamp = datetime.now()
+        return embed
+
     def _format_message_link(sef, msg):
         message_link = 'https://discordapp.com/channels/' \
             + f'{msg.guild.id}/{msg.channel.id}/{msg.id}'
@@ -612,7 +621,14 @@ class Rules(commands.Cog):
                     continue
 
                 await asyncio.sleep(2)
-                await msg.edit(content=updated_text)
+                # Messages posted as embeds (incl. legacy ones) must be
+                # updated via the embed; editing content alone leaves the
+                # embed stale. Plain-text messages stay plain text.
+                if msg.embeds:
+                    await msg.edit(content=None,
+                                   embed=self._create_embed(updated_text))
+                else:
+                    await msg.edit(content=updated_text)
                 log.info("Updated auto-update message: %s", message["link"])
 
 
