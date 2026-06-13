@@ -66,15 +66,7 @@ class Rules(commands.Cog):
         # Get only specified rules
         if num is not None:
             await ctx.message.delete()
-            partial_rules = ""
-
-            no_dupes = remove_duplicates(num.split())
-
-            for rule in no_dupes:
-                ruleregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
-                m = re.search(ruleregex, rule_text)
-                if m is not None:
-                    partial_rules += m.groups()[0] + "\n"
+            partial_rules = extract_rules(rule_text, num.split())
 
             if partial_rules == "":
                 await ctx.send('Fant ikke reglene du ser etter')
@@ -488,13 +480,7 @@ class Rules(commands.Cog):
             return
 
         # Get only specified rules
-        partial_rules = ""
-        no_dupes = remove_duplicates(num.split())
-        for rule in no_dupes:
-            ruleregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
-            m = re.search(ruleregex, rule_text)
-            if m is not None:
-                partial_rules += m.groups()[0] + "\n"
+        partial_rules = extract_rules(rule_text, num.split())
 
         if partial_rules == '':
             return
@@ -678,6 +664,21 @@ def remove_duplicates(dupe_list):
         seen[item] = 1
         result.append(item)
     return result
+
+
+def extract_rules(rule_text, numbers):
+    """Pull the "§ n: ..." lines for the requested rule numbers out of
+    rule_text. `numbers` is an iterable of identifiers (e.g. ["13", "4a"]);
+    duplicates are ignored. Returns the matched lines joined with newlines
+    (trailing newline included), or "" if nothing matched.
+    """
+    partial_rules = ""
+    for rule in remove_duplicates(list(numbers)):
+        ruleregex = r"(§ *" + re.escape(rule) + r"[a-z]?: [\S ]*)"
+        m = re.search(ruleregex, rule_text)
+        if m is not None:
+            partial_rules += m.groups()[0] + "\n"
+    return partial_rules
 
 
 async def setup(bot):
